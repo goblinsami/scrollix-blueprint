@@ -2,7 +2,7 @@
 
 ## Autorización y arranque
 
-El usuario autoriza cada hito por separado, por ejemplo: «Autorizo M1». Esa autorización activa al Orchestrator e incluye delegar el trabajo del hito en agentes especializados, integrar sus cambios, ejecutar pruebas y corregir fallos hasta satisfacer sus criterios de aceptación. No pedir una segunda confirmación para repartir tareas o empezar. No hace falta que el usuario pegue el plan de nuevo.
+El usuario autoriza hitos identificados, por ejemplo: «Autorizo M1». También puede autorizar expresamente una secuencia, como M1→M2→M3; en ese caso se completa en orden sin solicitar confirmación entre esos hitos. Esa autorización activa al Orchestrator e incluye delegar el trabajo del hito en agentes especializados, integrar sus cambios, ejecutar pruebas y corregir fallos hasta satisfacer sus criterios de aceptación. No pedir una segunda confirmación para repartir tareas o empezar. No hace falta que el usuario pegue el plan de nuevo.
 
 El agente principal de la sesión asume el papel de Orchestrator: lee AGENTS.md, su perfil, IMPLEMENTATION_PLAN.md, OWNERSHIP.md y el estado real del repositorio. Lanza subagentes reales con los perfiles Core, 3D, Integration o QA según las tareas del hito. Los archivos de perfiles no ejecutan agentes por sí mismos. No crear chats del usuario como sustituto de subagentes.
 
@@ -15,7 +15,7 @@ Si una autorización no identifica el hito y el contexto no permite resolverlo c
 3. Descomponer y asignar tareas concretas con entradas, salida esperada, ownership y criterios verificables. Iniciar los subagentes necesarios; no activar cinco roles sin trabajo útil. Respetar el límite de agentes disponible y escalonar tareas cuando falten plazas. QA recibe el criterio de aceptación desde el inicio y dispone de una revisión independiente de la implementación.
 4. Ejecutar en paralelo solo tareas independientes con archivos separados. Los cambios compartidos se secuencian. El Orchestrator sigue trabajando en coordinación e integración, recibe entregas y desbloquea dependencias; no escribe simultáneamente los mismos archivos que otro agente.
 5. Integrar, revisar y ejecutar los checks apropiados. QA implementa/mantiene tests y E2E, ejecuta los escenarios del hito, revisa capturas y traces y reporta fallos. El propietario de cada módulo corrige; QA vuelve a verificar. Repetir hasta satisfacer la aceptación, sin dar un hito por terminado con pruebas fallidas u omisiones obligatorias.
-6. Cerrar el hito con evidencia: archivos y comportamiento entregados, comandos y resultados, capturas cuando proceda, limitaciones y decisiones. Actualizar docs/HITO_ACTUAL.md. Detenerse al completar ese hito y esperar autorización del siguiente; no encadenar hitos sin permiso.
+6. Cerrar el hito con evidencia: archivos y comportamiento entregados, comandos y resultados, capturas cuando proceda, limitaciones y decisiones. Actualizar docs/HITO_ACTUAL.md. Si hay autorización conjunta para una secuencia, pasar al siguiente hito autorizado tras cumplir la aceptación del anterior. Al completar el último autorizado, detenerse y esperar nueva autorización.
 
 ## Autonomía y bloqueos
 

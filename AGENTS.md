@@ -27,3 +27,7 @@ El usuario autoriza infraestructura y pruebas E2E Playwright reales sobre la apl
 ## Arranque operativo
 
 Al recibir autorización de un hito, el agente principal asume Orchestrator y ejecuta [el protocolo de orquestación](docs/ORCHESTRATION.md). Iniciar, delegar, integrar y verificar hasta completar la aceptación. Resolver incidencias rutinarias de forma autónoma; escalar solo bloqueos importantes tras investigar alternativas. Al cerrar el hito, informar y esperar autorización del siguiente.
+
+## Estado tras ejecución autorizada M1–M3
+
+El usuario autorizó conjuntamente M1→M2→M3 y se completaron en orden con agentes reales y QA independiente. Ver docs/HITO_ACTUAL.md. M4/M5 requieren nueva autorización. No se han realizado pushes ni despliegues durante esta implementación.

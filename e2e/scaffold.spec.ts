@@ -1,56 +1,95 @@
-import { test as base, expect } from 'playwright/test';
+import { waitForRendered } from './rendered';
+import { test, expect } from './fixtures';
+import type { Page } from 'playwright/test';
 
-// Automatic fixture checks errors throughout each test, including resize and scroll.
-const test = base.extend<{ monitor: void }>({
-  monitor: [async ({ page }, use) => {
-    const errors: string[] = [];
-    page.on('pageerror', error => errors.push('pageerror: ' + error.message));
-    page.on('console', message => { if (message.type() === 'error') errors.push('console: ' + message.text()); });
-    page.on('response', response => { if (response.status() >= 400) errors.push('HTTP ' + response.status() + ': ' + response.url()); });
-    page.on('requestfailed', request => errors.push('request: ' + request.url() + ' ' + request.failure()?.errorText));
-    // Tests are local-only; unexpected remote requests fail instead of going online.
-    await page.route('**/*', async route => {
-      const url = new URL(route.request().url());
-      if (url.hostname === '127.0.0.1') await route.continue();
-      else { errors.push('Unexpected external request: ' + url.href); await route.abort(); }
-    });
-    await use();
-    expect(errors, 'No runtime, network or console errors').toEqual([]);
-  }, { auto: true }],
-});
-
-async function expectContent(page: import('playwright/test').Page) {
-  await expect(page.getByRole('heading', { name: 'Scrollix Blueprint', exact: true })).toBeVisible();
-  await expect(page.getByText('Fase 0 preparada para revisión.', { exact: false })).toBeVisible();
-  await expect(page.getByText('Contrato v1 · Three.js r176 · preset paper', { exact: true })).toBeVisible();
-  const overflows = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
-  expect(overflows, 'No horizontal overflow').toBe(false);
-}
-
-test('loads the current scaffold and captures its visible state', async ({ page }, testInfo) => {
+const viewport = (page: Page) => page.getByTestId('blueprint-viewport');
+async function progress(page: Page) { return Number(await viewport(page).getAttribute('data-progress')); }
+async function ready(page: Page) {
   const response = await page.goto('/');
   expect(response?.ok()).toBe(true);
-  await expect(page).toHaveTitle('Scrollix Blueprint · Fase 0');
-  await expectContent(page);
-  await testInfo.attach('scaffold-full-page', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
+  await expect(viewport(page)).toHaveAttribute('data-disposed', 'false');
+  await expect(page.getByRole('slider', { name: 'Progreso' })).toBeVisible();
+  await expect(page.getByLabel('Preset', { exact: true })).toBeVisible();
+  await expect(page.getByRole('alert')).toBeHidden();
+}
+async function noOverflow(page: Page) { expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth), 'No horizontal overflow').toBe(false); }
+
+test('loads a usable playground with visible controls at each viewport', async ({ page }, info) => {
+  await ready(page);
+  await expect(page.getByRole('heading', { name: 'From line to space' })).toBeVisible();
+  await expect.poll(() => progress(page)).toBeCloseTo(0, 2);
+  await noOverflow(page);
+  const bounds = await viewport(page).boundingBox(); expect(bounds?.width).toBeGreaterThan(200); expect(bounds?.height).toBeGreaterThan(100);
+  await waitForRendered(page);
+  await info.attach('playground-initial', { body: await page.screenshot(), contentType: 'image/png' });
 });
 
-test('content survives native scroll, keyboard navigation and resize', async ({ page }) => {
-  await page.goto('/');
-  await expectContent(page);
-  await page.mouse.wheel(0, 900);
-  await page.keyboard.press('End');
-  await expectContent(page);
-  await page.keyboard.press('Home');
-  await page.mouse.wheel(0, -900);
-  const current = page.viewportSize()!;
-  await page.setViewportSize({ width: current.width + 40, height: current.height });
-  await expectContent(page);
+test('range keyboard and phase buttons share progress with native scrolling', async ({ page }) => {
+  await ready(page);
+  const slider = page.getByRole('slider', { name: 'Progreso' });
+  await slider.focus(); await slider.press('End');
+  await expect.poll(() => progress(page)).toBeCloseTo(1, 2);
+  await expect(viewport(page)).toHaveAttribute('data-phase', 'reveal');
+  await slider.press('Home');
+  await expect.poll(() => progress(page)).toBeCloseTo(0, 2);
+  await page.getByRole('button', { name: 'Draw', exact: true }).click();
+  await expect.poll(() => progress(page)).toBeCloseTo(0.175, 2);
+  await page.getByRole('button', { name: 'Extrude', exact: true }).click();
+  await expect.poll(() => progress(page)).toBeCloseTo(0.525, 2);
+  await page.getByRole('button', { name: 'Inicio', exact: true }).click();
+  await expect.poll(() => progress(page)).toBeCloseTo(0, 2);
 });
 
-test('remains readable when reduced motion is requested', async ({ page }) => {
+test('wheel traverses forwards and backwards and releases the page at the end', async ({ page }) => {
+  await ready(page);
+  await viewport(page).hover(); await page.mouse.wheel(0, 800);
+  await expect.poll(() => progress(page)).toBeGreaterThan(0.05);
+  await page.mouse.wheel(0, -1200);
+  await expect.poll(() => progress(page)).toBeCloseTo(0, 2);
+  await page.getByRole('button', { name: 'Reveal', exact: true }).click();
+  await expect.poll(() => progress(page)).toBeCloseTo(1, 2);
+  await page.mouse.wheel(0, 1200);
+  await expect(page.getByRole('heading', { name: /Every space starts/ })).toBeInViewport();
+  await page.getByRole('link', { name: /Volver al inicio/ }).click();
+  await expect.poll(() => progress(page)).toBeCloseTo(0, 2);
+});
+
+test('presets update the active project without losing progress or overflowing on resize', async ({ page }) => {
+  await ready(page);
+  await page.getByRole('button', { name: 'Draw', exact: true }).click();
+  for (const preset of ['inverted-blueprint', 'material-study', 'paper']) {
+    await page.getByLabel('Preset', { exact: true }).selectOption(preset);
+    await expect(page.locator('.studio-shell')).toHaveAttribute('data-preset', preset);
+    await expect.poll(() => progress(page)).toBeCloseTo(0.175, 2);
+    await expect(page.getByRole('alert')).toBeHidden();
+  }
+  const size = page.viewportSize()!;
+  await page.setViewportSize({ width: size.width + 40, height: size.height });
+  await noOverflow(page);
+  await expect(viewport(page)).toBeVisible();
+});
+
+test('reduced motion remains operable and reload creates one fresh viewport', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/');
-  expect(await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches)).toBe(true);
-  await expectContent(page);
+  await ready(page);
+  await expect(page.locator('.studio-shell')).toHaveAttribute('data-reduced-motion', 'true');
+  await page.getByRole('button', { name: 'Reveal', exact: true }).click();
+  await expect.poll(() => progress(page)).toBeCloseTo(1, 2);
+  await page.reload();
+  await expect(viewport(page)).toHaveCount(1);
+  await expect(viewport(page)).toHaveAttribute('data-disposed', 'false');
+  await noOverflow(page);
+});
+
+test('pointer and mobile touchscreen can scrub the range and select a phase', async ({ page, isMobile }) => {
+  await ready(page);
+  const slider = page.getByRole('slider', { name: 'Progreso' });
+  const box = (await slider.boundingBox())!;
+  const x = box.x + box.width * 0.5, y = box.y + box.height / 2;
+  if (isMobile) await page.touchscreen.tap(x, y); else await page.mouse.click(x, y);
+  await expect.poll(() => progress(page)).toBeGreaterThan(0.4);
+  await expect.poll(() => progress(page)).toBeLessThan(0.6);
+  await waitForRendered(page);
+  if (isMobile) await page.getByRole('button', { name: 'Reveal', exact: true }).tap(); else await page.getByRole('button', { name: 'Reveal', exact: true }).click();
+  await expect.poll(() => progress(page)).toBeCloseTo(1, 2); await waitForRendered(page);
 });

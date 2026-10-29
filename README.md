@@ -1,24 +1,34 @@
 # Scrollix Blueprint
 
-Fase 0: preparación local, pendiente de revisión del usuario. No hay motor, escena WebGL, Draw, Extrude, Reveal, adaptador Framer ni despliegue implementados.
+Playground local de arquitectura conceptual. M1, M2 y M3 completados: MVP visual Draw → Extrude → Reveal disponible. Estado y evidencia: [HITO_ACTUAL.md](docs/HITO_ACTUAL.md).
 
-## Uso local (Windows)
+## Probar localmente en Windows
 
-Node 24 y npm 11. Desde esta carpeta: npm ci --ignore-scripts --no-audit --no-fund, después npm run check. Para abrir la página de estado: npm run dev. Si PowerShell bloquea npm.ps1, utilizar npm.cmd. La instalación inicial de Fase 0 utiliza únicamente caché local con --offline; no se ha contactado con registros.
+Node 24 y npm 11. Desde C:/WORKSPACE/showcase/scrollix-blueprint:
 
-## Fuentes de verdad
+```powershell
+npm.cmd ci --offline --ignore-scripts --no-audit --no-fund
+npm.cmd run dev
+```
 
-- [Arquitectura](docs/ARCHITECTURE.md), [contrato](docs/CONTRACT.md), [dirección artística](docs/ART_DIRECTION.md).
-- [Auditoría y procedencia](docs/AUDIT.md), [revisión adjunta](docs/sources/ARCHITECTURE_REVIEW.md).
-- [Agentes](AGENTS.md), [ownership](docs/OWNERSHIP.md), [hitos](docs/IMPLEMENTATION_PLAN.md), [decisiones](docs/DECISIONS.md).
-- [Validación de Fase 0](docs/PHASE0_REPORT.md).
+Abrir http://127.0.0.1:5173. La instalación offline requiere la caché local; en otra máquina la instalación mediante registro necesita conexión. El servidor solo escucha en loopback.
 
-Las dependencias se fijan a versiones ya disponibles en Corridor, adaptando su lockfile transitivo y sin copiar código. No se afirma que sean las versiones más recientes. CI queda definida en archivo; solo se han ejecutado equivalentes locales.
+El slider Progreso, los botones de fase y el scroll nativo alimentan la misma timeline reversible. El selector Preset cambia Paper, Inverted Blueprint y Material Study sin perder el progreso. La sección sticky termina y permite continuar la página.
 
-## E2E de navegador
+## Verificar
 
-Playwright añadido tras la revisión de Fase 0. npm.cmd run test:e2e ejecuta Edge local en escritorio y dos tamaños móviles. npm.cmd run check:all añade estos E2E a los checks existentes. Ver [alcance y escenarios futuros](docs/E2E.md); actualmente se prueba la página de estado, no una experiencia 3D implementada.
+```powershell
+npm.cmd run check:all
+npm.cmd run test:e2e:report
+```
 
-## Autorizar un hito
+TypeScript estricto, Vitest y build Vite; Playwright con Edge headless local en escritorio y dos tamaños móviles. Capturas y traces en playwright-report/ y test-results/, ignorados por Git. Para otro navegador instalado usar PLAYWRIGHT_CHANNEL; ver [E2E](docs/E2E.md).
 
-El usuario autoriza cada hito, por ejemplo «Autorizo M1». El Orchestrator arranca y coordina agentes reales hasta completarlo; resuelve incidencias autónomamente y escala solo bloqueos importantes. Ver [protocolo de inicio y ejecución](docs/ORCHESTRATION.md). Al cerrar el hito se espera autorización del siguiente.
+## Documentación y agentes
+
+- [Plan](docs/IMPLEMENTATION_PLAN.md), [estado del hito](docs/HITO_ACTUAL.md), [orquestación](docs/ORCHESTRATION.md) y [ownership](docs/OWNERSHIP.md).
+- [Arquitectura](docs/ARCHITECTURE.md), [contrato](docs/CONTRACT.md), [dirección artística](docs/ART_DIRECTION.md) y [decisiones](docs/DECISIONS.md).
+- [Auditoría](docs/AUDIT.md) y [ARCHITECTURE_REVIEW.md adjunto](docs/sources/ARCHITECTURE_REVIEW.md).
+- [Informe histórico Fase 0](docs/PHASE0_REPORT.md).
+
+Autorizados conjuntamente M1→M2→M3: el Orchestrator ejecuta cada hito con agentes especializados y QA, sin pedir confirmación entre ellos. M4/M5 y las operaciones remotas quedan fuera de esta ejecución. Corridor permanece en solo lectura.

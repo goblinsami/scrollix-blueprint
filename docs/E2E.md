@@ -1,31 +1,31 @@
-# Pruebas reales de navegador con Playwright
+# Pruebas E2E de navegador · M1–M3
 
-## Alcance actual
+## Ejecutar localmente
 
-Playwright 1.64.1 está instalado desde caché. Usa Edge local en modo headless; no descarga navegadores ni accede a servicios externos. Ejecutar desde el repo: npm.cmd run test:e2e. El runner arranca y cierra Vite en 127.0.0.1:4173; falla si el puerto ya está ocupado para evitar probar una aplicación equivocada. Las peticiones externas de la página se bloquean y hacen fallar el test.
+Playwright 1.64.1 utiliza Edge instalado, headless, sin descargar navegadores. Desde el repo: npm.cmd run test:e2e; informe: npm.cmd run test:e2e:report. El runner arranca/cierra Vite en 127.0.0.1:4173 y falla si está ocupado. Se bloquean peticiones externas y se hacen fallar excepciones, consola error y HTTP/peticiones fallidos. No hay servidor de renderizado remoto.
 
-Tres proyectos: escritorio 1440×900, móvil emulado 390×844 y móvil compacto emulado 320×568. Tres casos por proyecto: carga/contenido visible; scroll nativo, teclado y resize; contenido con prefers-reduced-motion. Todos vigilan excepciones, consola, HTTP fallidos y peticiones fallidas. El scaffold cabe en pantalla: los gestos actuales NO acreditan un recorrido ni una transición 3D.
+Tres proyectos: desktop1440×900, móvil emulado390×844 y compacto320×568. Configuración en playwright.config.ts; cambiar PLAYWRIGHT_CHANNEL permite usar otro navegador instalado. La CI preparada instala Chromium; no se ha ejecutado en remoto durante estos hitos. Se usa el runner exportado por playwright/test, sin duplicar @playwright/test.
 
-Cada carga adjunta captura completa al informe. En fallo se guardan captura y trace. El vídeo está desactivado porque FFmpeg de Playwright no está disponible localmente; no se descarga ningún binario. Abrir: npm.cmd run test:e2e:report. Modo interactivo: npm.cmd run test:e2e:ui. Ejecutar todo: npm.cmd run check:all. Resultados e informes están ignorados por Git.
+## Cobertura activa
 
-Se usa playwright/test, export del paquete playwright que incluye el runner; no hace falta duplicar la dependencia con @playwright/test. Para otro navegador ya instalado, establecer PLAYWRIGHT_CHANNEL=chrome o chromium. En CI futura se instala Chromium y se utiliza PLAYWRIGHT_CHANNEL=chromium. No se ha ejecutado CI remota.
+| Suite | Verifica |
+|---|---|
+| scaffold.spec.ts | Controles visibles, teclado/range, pointer y touch tap reales, botones de fase, scroll nativo ida/vuelta/salida, presets, resize y recarga con reduced motion |
+| draw.spec.ts | WebGL real, aparición de segmentos y diferencias de píxeles, retorno exacto al mismo progreso y al inicio, reconstrucciones de presets con un canvas y presupuesto de recursos estable |
+| sequence.spec.ts | Draw completo→Extrude→Reveal, altura y cámara, reversa con imagen exacta, recorrido mediante wheel, resize sin perder geometría y ciclos de mount/update/dispose públicos con canvas real |
 
-## Matriz pendiente de implementación
+e2e/rendered.ts espera renderedProgress===progress antes de capturar, además de los estados/fases y renderCount. Evita confundir un RAF anterior con el estado solicitado. No hay sleeps arbitrarios ni snapshots aprobados automáticamente. e2e/pngPixels.ts decodifica píxeles PNG para comparar imágenes en la misma sesión; reversa y regreso a Paper exigen diferencia cero. El modelo geométrico y los diagnósticos se contrastan con las imágenes, no se usan como sustituto del render.
 
-No se añaden tests omitidos o mocks de una experiencia inexistente. Estos escenarios deben convertirse en tests activos dentro de cada hito, y fallar si una fase no se alcanza:
+## Evidencia
 
-| Hito | Interacción real | Comprobación necesaria |
-|---|---|---|
-| M1 | Slider, wheel/trackpad, teclado y recarga | Mismo progreso observable, límites 0/1, avance y retroceso, sin errores ni listeners duplicados |
-| M2 | Scroll desde inicio hasta Draw completo | Canvas renderizado; contorno, puerta y dos cotas visibles; capturas al inicio/medio/final y al retroceder |
-| M3 | Recorrido Draw→Extrude→Reveal y regreso | Todas las fases alcanzadas, muros y cámara coherentes, continuidad en fronteras, estado reconstruido al volver al mismo progreso |
-| M4 | Llegar a cada estación, CTA y portfolio | Todo el contenido y enlaces accesibles, scroll liberado al final, foco/teclado, móvil táctil, reduced motion y fallback sin WebGL |
-| M5 | Cambiar props y montar/desmontar integración | Paridad de configuración, actualización visible y recuperación tras fallos; Framer real requiere entorno autorizado |
+29/10/2026: npm.cmd run check:all pasa: TypeScript, 73 tests unitarios, build y 33 E2E. Se revisaron capturas de plano, extrusión y Reveal en las tres resoluciones. Se conservaron comparaciones estrictas al corregir carreras de resize y scroll encontradas durante QA.
 
-El futuro playground expondrá progreso/fase y estado de escena lista mediante un contrato de observabilidad mínimo revisado en M1. Las pruebas combinarán ese estado con efectos visibles: el progreso por sí solo no demuestra que se dibuje geometría. No fijar sleeps arbitrarios: esperar a escena lista, estado alcanzado y render completado. Probar puntos interiores y ambos lados de cada frontera.
+Capturas adjuntas al informe y PNG nombrados en test-results/ por suite/proyecto. En fallo: screenshot y trace; vídeo desactivado por no disponer de FFmpeg local. Informes/artefactos están ignorados por Git. Revisar con npm.cmd run test:e2e:report. Las capturas permiten inspección visual; no se afirma una regresión visual entre versiones basada en baselines aprobados por el usuario.
 
-Para regresión visual, capturas con toHaveScreenshot y baselines revisados por una persona, por navegador/SO/viewport. No aprobar baselines generados a ciegas ni confiar solo en un canvas no vacío. Primero revisión visual de las capturas y después comparación estable; actualizar referencias solo por un cambio visual intencional. Edge headless y emulación móvil no sustituyen pruebas en GPU y móvil físicos; ni certifican FPS o limpieza de GPU.
+## Siguientes hitos
 
-## Estado de ejecución
+M4 incorporará narrativa, CTAs/portfolio real, foco, accesibilidad completa, reduced motion/fallback WebGL de producto y pruebas táctiles de arrastre/swipe. Los taps táctiles actuales prueban el range; wheel en emulación móvil no equivale a un swipe físico. M5 probará la integración Framer y actualizaciones reales del host. No se han implementado esos hitos.
 
-29 de octubre de 2026: npm.cmd run check:all correcto. TypeScript y build pasan, 28 tests unitarios pasan y 9/9 E2E pasan con Edge real headless en Windows (4.3 s). Revisadas las tres capturas: texto completo legible y sin recortes en escritorio y ambos tamaños móviles. Primer intento E2E bloqueado por FFmpeg ausente; se desactivó únicamente la grabación de vídeo y se mantuvieron capturas y traces. CI remota no ejecutada. QA es propietario de e2e/** y de revisar las evidencias; Orchestrator coordina configuración y aceptación.
+Headless y emulación no certifican FPS ni memoria de driver en GPU/móvil físicos. Los presupuestos observados cuentan recursos propios por escena; se complementan con pruebas de dispose, no son una medición completa de memoria GPU.
+
+QA es propietario de tests, fixtures, E2E y revisión de imágenes; cada agente corrige sus módulos. El Orchestrator coordina contratos, configuración y aceptación. Consultar HITO_ACTUAL.md.

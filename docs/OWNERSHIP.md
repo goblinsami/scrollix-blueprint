@@ -3,9 +3,9 @@
 | Superficie | Propietario | Revisión / consumidor |
 |---|---|---|
 | src/contracts/**, src/index.ts | Orchestrator; Core por asignación explícita | Todos; QA prueba límites |
-| src/core/** (futuro) | Core | 3D e Integration |
-| src/scene/** (futuro) | 3D | Core y QA |
-| src/integration/**, src/playground/** (futuros), página de estado | Integration | Core y QA |
+| src/core/** | Core | 3D e Integration |
+| src/scene/** | 3D | Core y QA |
+| src/integration/**, src/playground/**, página de estado | Integration | Core y QA |
 | tests/**, e2e/** y revisión de capturas | QA | Propietario de la función revisa casos |
 | docs/**, .agents/**, configuración y CI | Orchestrator | Rol afectado |
 
