@@ -30,7 +30,7 @@ function environment() {
 }
 function scene() {
   let pendingProgress = 0;
-  const diagnostics = { renderCount: 0, renderedProgress: 0, lineSegmentsVisible: 0, lineSegmentsTotal: 10, wallHeight: 0, cameraPosition: [1, 2, 3] as [number, number, number], geometries: 1, materials: 1, textures: 0 };
+  const diagnostics = { renderCount: 0, renderedProgress: 0, lineSegmentsVisible: 0, lineSegmentsTotal: 10, wallHeight: 0, cameraPosition: [1, 2, 3] as [number, number, number], cameraLookAt: [0, 0, 0] as [number, number, number], cameraProfile: 'desktop' as const, cameraElevation: 62, geometries: 1, materials: 1, textures: 0 };
   return { setProgress: vi.fn((progress: number) => { pendingProgress = progress; }), resize: vi.fn(), render: vi.fn(() => { diagnostics.renderCount++; diagnostics.renderedProgress = pendingProgress; }), getDiagnostics: () => diagnostics, dispose: vi.fn() } satisfies BlueprintScene;
 }
 function deferred<T>() {
@@ -163,8 +163,9 @@ describe('runtime lifecycle', () => {
     const runtime = await mountBlueprintRuntime(container, createDefaultProject(), { createScene: () => candidate });
     const snapshot = runtime.getState(); snapshot.progress = 0.9;
     (snapshot.diagnostics!.cameraPosition as unknown as number[])[0] = 100;
+    (snapshot.diagnostics!.cameraLookAt as unknown as number[])[0] = 100;
     snapshot.diagnostics!.renderCount = 900;
-    expect(runtime.getState().progress).toBe(0); expect(runtime.getState().diagnostics?.cameraPosition[0]).toBe(1); expect(runtime.getState().diagnostics?.renderCount).toBe(1);
+    expect(runtime.getState().progress).toBe(0); expect(runtime.getState().diagnostics?.cameraPosition[0]).toBe(1); expect(runtime.getState().diagnostics?.cameraLookAt[0]).toBe(0); expect(runtime.getState().diagnostics?.renderCount).toBe(1);
     runtime.dispose();
   });
 });

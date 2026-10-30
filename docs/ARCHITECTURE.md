@@ -1,4 +1,4 @@
-# Arquitectura implementada · M1–M3
+# Arquitectura implementada · M3.5-A
 
 Landing arquitectónica conceptual, sin CAD aportado por el comprador. Un runtime independiente de hosts, un progreso normalizado y una escena. No hay API ni base de datos.
 
@@ -15,9 +15,11 @@ src/index.ts es el punto público de composición. Core recibe una factoría de 
 - src/core/runtime.ts: montaje, actualización transaccional, generaciones/abort, resize, observadores, invalidación y suscripción.
 - src/playground/mountPlayground.ts: controles, scroll sticky nativo, presets, viewport responsive y salida al documento. El texto de proyecto se inserta como texto; el template HTML es estático.
 - src/scene/floorPlan.ts: segmentos paramétricos de contorno/partición, hueco de entrada, arco y dos cotas.
-- src/scene/motion.ts: altura de muros y dirección/up de cámara como funciones absolutas del progreso.
+- src/scene/motion.ts: altura de muros y coordinación de la cámara espacial con una única timeline.
 - src/scene/framing.ts: encuadre de ocho esquinas del volumen usando la misma base de cámara.
-- src/scene/createBlueprintScene.ts: Three.js, render bajo demanda, recursos procedurales, dibujo progresivo y volúmenes.
+- src/scene/cameraPath.ts: posición/lookAt por keyframes normalizados, perfiles y hold; fitting global del último keyframe.
+- src/scene/sceneGeometry.ts: suelo/retícula extendidos, drawRange, cotas y muros desde los mismos ejes.
+- src/scene/createBlueprintScene.ts: composición Three.js y render bajo demanda, con geometría/cámara delegadas a helpers.
 - src/scene/ResourceOwner.ts: ownership explícito y liberación deduplicada de todos los recursos asignados.
 
 ## Lifecycle y render
@@ -30,9 +32,9 @@ El scheduler agrupa invalidaciones en un RAF, sin bucle permanente. Pausa si el 
 
 ## Escena y cámara
 
-Plano centrado en XZ, Y arriba. Los segmentos subdivididos se dibujan con drawRange; puerta y cotas siguen subintervalos dentro de Draw. CanvasTexture genera los dos textos técnicos sin assets remotos. Muros comparten los ejes del plano y respetan el hueco de entrada. La altura crece con smoothstep durante Extrude; Reveal completa la cámara oblicua. Toda transformación se reconstruye desde progreso, sin acumular deltas ni depender del tiempo transcurrido.
+Plano centrado en XZ, Y arriba. Los segmentos subdivididos se dibujan con drawRange; puerta y cotas siguen subintervalos dentro de Draw. CanvasTexture genera los dos textos técnicos sin assets remotos. Muros comparten los ejes del plano y respetan el hueco de entrada. La altura base crece con smoothstep durante Extrude y cada eje aplica su heightScale; Reveal descubre la composición con una cámara aérea oblicua. Toda transformación se reconstruye desde progreso, sin acumular deltas ni depender del tiempo transcurrido.
 
-Cámara y framing comparten vectores direction/up continuos desde cenital; no hay cambio brusco de base al inclinarse. Se encuadran volumen, cotas y margen según FOV y aspect del contenedor, con fill desktop/móvil. Las anotaciones compensan tamaño y perspectiva para seguir legibles. Sin sombras dinámicas obligatorias ni postprocesado.
+La cámara se traslada por posiciones y puntos de interés diferenciados en Draw/Extrude, con up mundialY. Solo la pose final usa framing global según FOV/aspect/fill. Los recortes anteriores son narrativos; se comprueba que la cámara no atraviese muros. La dirección final default tiene62° sobre el suelo y se mantiene desde holdStart hasta1. Las anotaciones compensan tamaño y perspectiva para seguir legibles. Sin sombras dinámicas obligatorias ni postprocesado.
 
 ## Observabilidad y pruebas
 
@@ -40,4 +42,4 @@ getState/subscribe entregan snapshots independientes con fase/fracciones, sceneR
 
 ## Fuera de estos hitos
 
-M4: narrativa editorial completa, CTAs/portfolio real, accesibilidad y fallback WebGL de producto. M5: adaptador Framer y distribución. El playground actual no equivale a esas integraciones. Las pruebas headless y la emulación móvil no certifican rendimiento ni memoria en GPU física.
+M3.5-B/C requieren aprobación visual deA: geometría definitiva y acabado/optimización. M4: narrativa editorial completa, CTAs/portfolio real, accesibilidad y fallback WebGL de producto. M5: adaptador Framer y distribución. El playground actual no equivale a esas integraciones. Las pruebas headless y la emulación móvil no certifican rendimiento ni memoria en GPU física.

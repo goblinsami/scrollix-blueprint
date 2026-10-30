@@ -1,6 +1,6 @@
 # Scrollix Blueprint
 
-Playground local de arquitectura conceptual. M1, M2 y M3 completados: MVP visual Draw → Extrude → Reveal disponible. Estado y evidencia: [HITO_ACTUAL.md](docs/HITO_ACTUAL.md).
+Playground local de arquitectura conceptual. M1–M3 completados y M3.5-A implementado para revisión visual: recorrido espacial cercano, composición provisional y Reveal sostenido. Estado y evidencia: [HITO_ACTUAL.md](docs/HITO_ACTUAL.md).
 
 ## Probar localmente en Windows
 
@@ -32,3 +32,7 @@ TypeScript estricto, Vitest y build Vite; Playwright con Edge headless local en 
 - [Informe histórico Fase 0](docs/PHASE0_REPORT.md).
 
 Autorizados conjuntamente M1→M2→M3: el Orchestrator ejecuta cada hito con agentes especializados y QA, sin pedir confirmación entre ellos. M4/M5 y las operaciones remotas quedan fuera de esta ejecución. Corridor permanece en solo lectura.
+
+## Revisión visual M3.5-A
+
+Galería local: http://127.0.0.1:5173/artifacts/m35a/index.html (con npm.cmd run dev). Contiene12capturas (6puntos desktop/móvil) y2vídeos del canvasWebGL. Generar evidencia: node scripts/capture-m35a.mjs y node scripts/record-m35a.mjs. Sin FFmpeg ni descargas; artifacts/ no se publica. Ver docs/M3_5_A_REPORT.md. Detención obligatoria: B/C requieren aprobación visual explícita; M4/M5 siguen pendientes.

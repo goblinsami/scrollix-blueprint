@@ -14,6 +14,10 @@ export interface SceneDiagnostics {
   lineSegmentsTotal: number;
   wallHeight: number;
   cameraPosition: readonly [number, number, number];
+  cameraLookAt: readonly [number, number, number];
+  cameraProfile: 'desktop' | 'mobile';
+  /** Degrees above the horizontal ground plane. */
+  cameraElevation: number;
   geometries: number;
   materials: number;
   textures: number;

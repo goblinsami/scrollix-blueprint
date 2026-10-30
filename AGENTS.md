@@ -31,3 +31,7 @@ Al recibir autorización de un hito, el agente principal asume Orchestrator y ej
 ## Estado tras ejecución autorizada M1–M3
 
 El usuario autorizó conjuntamente M1→M2→M3 y se completaron en orden con agentes reales y QA independiente. Ver docs/HITO_ACTUAL.md. M4/M5 requieren nueva autorización. No se han realizado pushes ni despliegues durante esta implementación.
+
+## Estado M3.5-A
+
+Implementado para revisión visual el30/10/2026. Ver docs/M3_5_A_REPORT.md. No iniciar M3.5-B/C hasta aprobación artística explícita del usuario, aunque las pruebas pasen. No iniciar M4/M5 ni publicar cambios sin autorización.

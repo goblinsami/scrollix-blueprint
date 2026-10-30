@@ -40,7 +40,7 @@ export async function mountBlueprintRuntime(
       ...sampleTimeline(progress, project.timeline),
       sceneReady: scene !== null && !disposed,
       disposed,
-      diagnostics: diagnostics ? { ...diagnostics, cameraPosition: [...diagnostics.cameraPosition] } : null,
+      diagnostics: diagnostics ? { ...diagnostics, cameraPosition: [...diagnostics.cameraPosition], cameraLookAt: [...diagnostics.cameraLookAt] } : null,
     };
   };
   const notify = () => {

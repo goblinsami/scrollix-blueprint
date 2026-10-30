@@ -23,3 +23,13 @@ Todos los números deben ser finitos. Cada estación requiere id, at y title. La
 createDefaultProject genera objetos independientes. Ningún host puede declarar defaults alternativos. Añadir campos exige actualizar tipo, factory, validador, tests, documentación y consumidores en una sola entrega coordinada. ports.ts fija firmas operativas; su semántica está en ARCHITECTURE.md. BlueprintRuntime añade getState y subscribe; BlueprintState contiene TimelineState, sceneReady/disposed y SceneDiagnostics. Los diagnósticos cuentan recursos propios (no memoria del driver GPU), segmentos visibles, altura y cámara. Cada snapshot es independiente; subscribe notifica al suscribirse y tras cambios/render.
 
 SceneDiagnostics.renderedProgress inicia en -1 y se actualiza solo tras render exitoso. El progreso lógico puede adelantarse a la imagen mientras el RAF está pendiente; un consumidor que capture o inspeccione imagen debe esperar que ambos coincidan.
+
+## Ampliación M3.5-A · storyboard espacial
+
+camera.storyboard contiene holdStart y dos perfiles desktop/mobile. Cada CameraKeyframe define at (progreso global), position y lookAt como tuples de3números finitos y fit opcional. Las coordenadas se normalizan X/Y por structure.width y Z por structure.depth. World up es [0,1,0]. El primer keyframe comienza en0, el último llega a holdStart, el orden es estricto y cada perfil tiene2..32poses. Solo el último puede/debe llevar fit:true. holdStart sigue a extrudeEnd y precede a1.
+
+createDefaultStoryboard(timeline,structure,holdStart?) es la única fuente de poses default: adapta tiempos a las fases configuradas y dirección final a62° sobre el suelo para cualquier aspect de estructura. validateBlueprintProject rellena el nuevo campo en proyectos mínimos o JSON antiguos. Rechaza posiciones/intereses degenerados, rayos paralelos a worldUp y intervalos con horizontales opuestas que colapsarían durante la interpolación. Las estructuras y tuples de salida son independientes del input.
+
+El fitting global se usa para resolver el último keyframe de Reveal. Los encuadres anteriores permanecen locales y pueden recortar deliberadamente la composición. Se interpola posición/lookAt desde progreso absoluto con smoothstep por tramo, sin acumulación ni otra timeline. Desde holdStart hasta1, la cámara queda constante (default.94..1).
+
+SceneDiagnostics añade cameraLookAt, cameraProfile y cameraElevation (grados sobre el plano horizontal), además de cameraPosition y renderedProgress. Runtime clona ambos vectores para aislar snapshots. El host solo los publica en dataset para observar pruebas, sin calcular trayectoria propia.

@@ -47,3 +47,13 @@ export function changedPixels(first: Buffer, second: Buffer, tolerance = 8): num
   }
   return count;
 }
+
+/** Paper preset: dark architectural ink, excluding the HUD and pale technical grid. */
+export function interiorInkPixels(buffer: Buffer): number {
+  const image=decodePng(buffer);let ink=0;
+  for(let y=40;y<image.height-40;y++)for(let x=10;x<image.width-10;x++){
+    const at=(y*image.width+x)*image.channels;
+    if(image.pixels[at]!<190&&image.pixels[at+1]!<190&&image.pixels[at+2]!<190)ink++;
+  }
+  return ink;
+}

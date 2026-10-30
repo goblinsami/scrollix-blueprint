@@ -90,6 +90,9 @@ export async function mountPlayground(app: HTMLElement): Promise<() => void> {
     viewport.dataset.wallHeight = String(state.diagnostics?.wallHeight ?? 0);
     if (state.diagnostics) {
       viewport.dataset.cameraPosition = state.diagnostics.cameraPosition.join(',');
+      viewport.dataset.cameraLookAt = state.diagnostics.cameraLookAt.join(',');
+      viewport.dataset.cameraProfile = state.diagnostics.cameraProfile;
+      viewport.dataset.cameraElevation = String(state.diagnostics.cameraElevation);
       viewport.dataset.geometries = String(state.diagnostics.geometries);
       viewport.dataset.materials = String(state.diagnostics.materials);
       viewport.dataset.textures = String(state.diagnostics.textures);

@@ -5,18 +5,19 @@ import { ResourceOwner } from '../src/scene/ResourceOwner';
 import { getFramingDistance } from '../src/scene/framing';
 
 describe('architectural plan', () => {
-  it('contains a real centered entry gap instead of drawing a wall through the door', () => {
-    const plan = buildFloorPlan(12, 18);
-    const front = plan.structural.filter(s => s.start[1] === 9 && s.end[1] === 9);
-    expect(front).toHaveLength(2);
-    for (const segment of front) {
-      const min = Math.min(segment.start[0], segment.end[0]), max = Math.max(segment.start[0], segment.end[0]);
-      expect(min >= 0.9 || max <= -0.9).toBe(true);
+  it('shares open asymmetric axes between drawing and walls, preserving the entry gap', () => {
+    const plan=buildFloorPlan(12,18),entryZ=.48*18,left=-.28*12,right=-.14*12;
+    expect(plan.wallAxes.length).toBeGreaterThan(7);
+    expect(plan.structural).toEqual(plan.wallAxes.map(({start,end})=>({start,end})));
+    expect(new Set(plan.wallAxes.map(axis=>axis.id)).size).toBe(plan.wallAxes.length);
+    expect(new Set(plan.wallAxes.map(axis=>axis.heightScale)).size).toBeGreaterThan(2);
+    for(const segment of plan.structural.filter(s=>s.start[1]===entryZ&&s.end[1]===entryZ)){
+      const min=Math.min(segment.start[0],segment.end[0]),max=Math.max(segment.start[0],segment.end[0]);expect(min>=right||max<=left).toBe(true);
     }
-    expect(plan.door.length).toBeGreaterThan(3);
-    expect(plan.door[0]?.start).toEqual([-0.9, 9]);
-    const arc = plan.door.slice(1);
-    for (const segment of arc) for (const point of [segment.start, segment.end]) expect(Math.hypot(point[0] + 0.9, point[1] - 9)).toBeCloseTo(1.8);
+    expect(plan.door[0]?.start).toEqual([left,entryZ]);
+    for(const segment of plan.door.slice(1))for(const point of [segment.start,segment.end])expect(Math.hypot(point[0]-left,point[1]-entryZ)).toBeCloseTo(.14*12);
+    const reflected=plan.structural.map(s=>JSON.stringify({start:[-s.start[0],s.start[1]],end:[-s.end[0],s.end[1]]}));
+    expect(reflected.some(s=>!plan.structural.some(original=>JSON.stringify(original)===s))).toBe(true);
   });
   it('has exactly two dimension labels with correct values outside the structural perimeter', () => {
     const plan = buildFloorPlan(12, 18);
@@ -72,7 +73,7 @@ describe('framing and resource ownership', () => {
   });
 });
 
-describe('camera framing contains the actual projected bounding corners', () => {
+describe('Reveal fitting helper contains the requested projected bounding corners', () => {
   it.each([
     [12, 18, 3, 1.6, 45, 0.75], [12, 18, 3, 0.4, 45, 0.65],
     [1, 1, 0.5, 0.4, 20, 0.65], [100, 100, 20, 1.6, 80, 0.75],

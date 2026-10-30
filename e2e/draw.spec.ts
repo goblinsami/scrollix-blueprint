@@ -1,6 +1,6 @@
 import { waitForRendered } from './rendered';
 import { test, expect } from './fixtures';
-import { changedPixels } from './pngPixels';
+import { changedPixels, interiorInkPixels } from './pngPixels';
 import type { Page, TestInfo } from 'playwright/test';
 const view = (page: Page) => page.getByTestId('blueprint-viewport');
 async function read(page: Page, key: string) { return Number(await view(page).getAttribute('data-' + key)); }
@@ -32,6 +32,7 @@ test('Draw renders real pixels progressively and reconstructs the same plan in r
   const partialCount = await read(page, 'line-segments-visible'), total = await read(page, 'line-segments-total');
   expect(partialCount).toBeGreaterThan(0); expect(partialCount).toBeLessThan(total);
   const partial = await capture(page, info, 'draw-partial');
+  expect(interiorInkPixels(partial), 'Draw has architectural strokes, not only a moving grid').toBeGreaterThan(50);
   expect(changedPixels(initial, partial), 'Actual draw changes visible pixels').toBeGreaterThan(100);
   await move(page, 'Extrude', 0.525);
   await expect.poll(() => read(page, 'line-segments-visible')).toBe(total);

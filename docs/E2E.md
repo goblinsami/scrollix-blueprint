@@ -29,3 +29,11 @@ M4 incorporará narrativa, CTAs/portfolio real, foco, accesibilidad completa, re
 Headless y emulación no certifican FPS ni memoria de driver en GPU/móvil físicos. Los presupuestos observados cuentan recursos propios por escena; se complementan con pruebas de dispose, no son una medición completa de memoria GPU.
 
 QA es propietario de tests, fixtures, E2E y revisión de imágenes; cada agente corrige sus módulos. El Orchestrator coordina contratos, configuración y aceptación. Consultar HITO_ACTUAL.md.
+
+## M3.5-A · revisión cinematográfica
+
+Validación técnica sobre código congelado:93unitarios y36E2E, más typecheck/build. La cámara se verifica con keyframes posición/lookAt, perfiles distintos, continuidad, rayos no degenerados, traslación horizontal, hold y encuadre final55–70°. Se muestrean1001puntos por perfil para evitar atravesar muros ya extruidos. El frustum completo ya no es criterio en Draw/Extrude: se exige descubrimiento parcial y geometría técnica visible, y frustum completo en Reveal. Los conteos de tinta diferencian la línea antialias de la retícula (gridRGB≥212, umbralRGB<190), manteniendo comparación exacta de píxeles al volver al mismo progreso.
+
+Evidencia persistente local: artifacts/m35a/index.html, captures.json y recordings.json. Generación: node scripts/capture-m35a.mjs y node scripts/record-m35a.mjs. El arnés usa otro puerto loopback y MediaRecorder sobre canvas.captureStream para dosWebM reales de unos20s. Añade solo metadata Duration a los bloques codificados; comprueba reproducción y extrae miniaturas del vídeo decodificado. Capturas incluyen playground; los vídeos contienen únicamente canvas, sinHUD.
+
+La evidencia se entrega para aprobación artística del usuario. No implica que B/C estén autorizados. No se han ejecutado acciones remotas ni pruebas de GPU física.

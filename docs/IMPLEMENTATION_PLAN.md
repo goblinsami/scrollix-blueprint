@@ -22,3 +22,15 @@ Preparar y ejecutar Playwright sobre el scaffold actual está autorizado. No amp
 ## Inicio y cierre
 
 Una autorización como «Autorizo M1» basta para iniciar planificación, delegación real, implementación, integración y QA de ese hito. No solicitar aprobación entre tareas rutinarias. El Orchestrator mantiene docs/HITO_ACTUAL.md desde el arranque y solo interrumpe la ejecución por un bloqueo importante no resoluble dentro de su autorización. Tras completar la aceptación, presenta resultados y espera la autorización del siguiente hito.
+
+## M3.5 · Cinematic Redesign (antes de M4)
+
+Brief recibido por el Orchestrator el 30/10/2026: [fuente íntegra](M3_5_CINEMATIC_BRIEF.md). [Plan operativo y asignaciones](M3_5_PLAN.md). Se conserva la infraestructura M1–M3 y se rediseña la puesta en escena.
+
+- M3.5-A: storyboard, cámara espacial y composición provisional. Autorización limitada a A; este handoff deja el plan preparado, sin cambios de producto. Entrega12 capturas (6 puntos×desktop/móvil),2 grabaciones y resultados técnicos. DETENERSE para aprobación visual del usuario.
+- M3.5-B: geometría/dibujo técnico definitivo; solo después de aprobar A. Nueva parada visual al cerrar B.
+- M3.5-C: acabado cinematográfico, materiales/iluminación, ritmo y rendimiento; solo después de aprobar B.
+
+M4/M5 permanecen fuera de alcance. No push ni deploy de M3.5 sin autorización explícita. Tests verdes no equivalen a aprobación artística.
+
+M3.5-A implementado el30/10/2026 y entregado para revisión visual. B/C bloqueados hasta aprobación explícita. Ver M3_5_A_REPORT.md y la galería local en artifacts/m35a/index.html.

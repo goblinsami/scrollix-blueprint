@@ -1,50 +1,55 @@
-export type PlanPoint = [number, number];
+export type PlanPoint = [number,number];
 export interface PlanSegment { start: PlanPoint; end: PlanPoint }
+export interface WallAxis extends PlanSegment { id: string; heightScale: number }
 export interface FloorPlan {
   structural: PlanSegment[];
+  wallAxes: WallAxis[];
   annotations: PlanSegment[];
   door: PlanSegment[];
-  labels: Array<{ text: string; position: PlanPoint }>;
-  bounds: { width: number; depth: number };
+  labels: Array<{text:string;position:PlanPoint}>;
+  bounds: {width:number;depth:number};
 }
-export function buildFloorPlan(width: number, depth: number): FloorPlan {
-  if (![width, depth].every(value => Number.isFinite(value) && value > 0)) throw new RangeError('Plan dimensions must be finite and positive.');
-  const x = width / 2, z = depth / 2;
-  const gap = Math.min(1.8, width * 0.25);
-  const margin = Math.max(0.7, Math.min(width, depth) * 0.12);
-  const structural: PlanSegment[] = [];
-  const annotations: PlanSegment[] = [];
-  const door: PlanSegment[] = [];
-  const line = (pool: PlanSegment[], a: PlanPoint, b: PlanPoint) => pool.push({start:a,end:b});
-  // A pavilion perimeter with a genuine entry gap. These are also the wall axes in M3.
-  line(structural, [-x,-z],[x,-z]);
-  line(structural, [x,-z],[x,z]);
-  line(structural, [x,z],[gap/2,z]);
-  line(structural, [-gap/2,z],[-x,z]);
-  line(structural, [-x,z],[-x,-z]);
-  // An L partition makes the conceptual plan legible without imitating a CAD import.
-  line(structural, [-x, -z * 0.2], [x * 0.22, -z * 0.2]);
-  line(structural, [x * 0.22, -z * 0.2], [x * 0.22, z * 0.45]);
-  const hinge: PlanPoint = [-gap/2,z];
-  line(door, hinge, [-gap/2,z-gap]);
-  for (let i=0;i<32;i++) {
-    const a = (i/32)*Math.PI/2, b = ((i+1)/32)*Math.PI/2;
-    line(door, [hinge[0]+Math.cos(a)*gap,hinge[1]-Math.sin(a)*gap], [hinge[0]+Math.cos(b)*gap,hinge[1]-Math.sin(b)*gap]);
+/** Temporary three-zone composition for reviewing the camera, not the final B geometry. */
+export function buildFloorPlan(width:number,depth:number):FloorPlan {
+  if(![width,depth].every(v=>Number.isFinite(v)&&v>0))throw new RangeError('Plan dimensions must be positive.');
+  const wallAxes:WallAxis[]=[];
+  const wall=(id:string,a:PlanPoint,b:PlanPoint,heightScale:number)=>wallAxes.push({id,start:[a[0]*width,a[1]*depth],end:[b[0]*width,b[1]*depth],heightScale});
+  // West studio: open north-east edge and a real entry in the south screen.
+  wall('west-spine',[-.48,.12],[-.48,.48],1);
+  wall('west-back',[-.48,.12],[-.24,.12],1.15);
+  wall('west-entry-left',[-.48,.48],[-.28,.48],.85);
+  wall('west-entry-right',[-.14,.48],[-.05,.48],.85);
+  wall('west-return',[-.05,.35],[-.05,.48],.65);
+  wall('west-low-screen',[-.48,.30],[-.31,.30],.5);
+  // East gallery: long screen, open approach and a lower freestanding blade.
+  wall('east-spine',[.50,-.05],[.50,.30],1.25);
+  wall('east-back',[.10,-.05],[.50,-.05],1.25);
+  wall('east-return',[.30,.30],[.50,.30],.8);
+  wall('east-low-screen',[.23,.11],[.23,.24],.55);
+  // North forum: a taller L with two open corners, not a closed room.
+  wall('north-back',[-.38,-.48],[.10,-.48],1.3);
+  wall('north-spine',[-.38,-.48],[-.38,-.24],1.3);
+  wall('north-return',[-.38,-.24],[-.23,-.24],.9);
+  wall('north-blade',[.10,-.48],[.10,-.38],1.05);
+  const door:PlanSegment[]=[], annotations:PlanSegment[]=[];
+  const line=(pool:PlanSegment[],start:PlanPoint,end:PlanPoint)=>pool.push({start,end});
+  const hinge:PlanPoint=[-.28*width,.48*depth], gap=.14*width;
+  line(door,hinge,[hinge[0],hinge[1]-gap]);
+  for(let i=0;i<32;i++){
+    const a=i*Math.PI/64,b=(i+1)*Math.PI/64;
+    line(door,[hinge[0]+Math.cos(a)*gap,hinge[1]-Math.sin(a)*gap],[hinge[0]+Math.cos(b)*gap,hinge[1]-Math.sin(b)*gap]);
   }
-  const dz = z + margin, dx = -x - margin, tick = margin * 0.16;
-  line(annotations, [-x,z+margin*0.25], [-x,dz+tick*2]);
-  line(annotations, [x,z+margin*0.25], [x,dz+tick*2]);
-  line(annotations, [-x,dz],[x,dz]);
-  for (const px of [-x,x]) line(annotations,[px-tick,dz+tick],[px+tick,dz-tick]);
-  line(annotations, [-x-margin*0.25,-z], [dx-tick*2,-z]);
-  line(annotations, [-x-margin*0.25,z], [dx-tick*2,z]);
-  line(annotations, [dx,-z],[dx,z]);
-  for (const pz of [-z,z]) line(annotations,[dx-tick,pz-tick],[dx+tick,pz+tick]);
-  const format = (value:number) => value.toFixed(2) + ' m';
-  return { structural, annotations, door,
-    labels:[{text:format(width),position:[0,dz+margin*0.5]}, {text:format(depth),position:[dx-margin*0.45,0]}],
-    bounds:{width:width+margin*4.8,depth:depth+margin*4.8},
-  };
+  const x=width/2,z=depth/2,margin=Math.max(.7,Math.min(width,depth)*.12),tick=margin*.16;
+  const dz=z+margin,dx=-x-margin;
+  line(annotations,[-x,z+margin*.25],[-x,dz+tick*2]);line(annotations,[x,z+margin*.25],[x,dz+tick*2]);
+  line(annotations,[-x,dz],[x,dz]);
+  for(const px of[-x,x])line(annotations,[px-tick,dz+tick],[px+tick,dz-tick]);
+  line(annotations,[-x-margin*.25,-z],[dx-tick*2,-z]);line(annotations,[-x-margin*.25,z],[dx-tick*2,z]);
+  line(annotations,[dx,-z],[dx,z]);
+  for(const pz of[-z,z])line(annotations,[dx-tick,pz-tick],[dx+tick,pz+tick]);
+  return{wallAxes,structural:wallAxes.map(({start,end})=>({start,end})),door,annotations,
+    labels:[{text:width.toFixed(2)+' m',position:[0,dz+margin*.5]},{text:depth.toFixed(2)+' m',position:[dx-margin*.45,0]}],
+    bounds:{width:width+margin*4.8,depth:depth+margin*4.8}};
 }
 /** Equal-distance subdivisions avoid whole long walls popping into view. */
 export function subdivideSegments(segments: readonly PlanSegment[], step: number): PlanSegment[] {

@@ -1,3 +1,4 @@
+import { createDefaultProject } from '../src/contracts/defaults';
 import { waitForRendered } from './rendered';
 import { test, expect } from './fixtures';
 import { changedPixels } from './pngPixels';
@@ -9,20 +10,19 @@ async function button(page: Page, name: string) { const before = await number(pa
 async function capture(page: Page, info: TestInfo, name: string) { await waitForRendered(page); const image = await page.locator('canvas[role="img"]').screenshot({ path: info.outputPath(name + '.png') }); await info.attach(name, { body: image, contentType: 'image/png' }); return image; }
 async function camera(page: Page) { return (await view(page).getAttribute('data-camera-position'))!.split(',').map(Number); }
 
-// Use the browser's real range keyboard interaction to reach the phase boundary.
-async function keyboardDrawEnd(page: Page) {
-  const slider = page.getByRole('slider', { name: 'Progreso' }); await slider.focus(); await slider.press('Home');
-  for (let i = 0; i < 3; i++) await slider.press('PageUp');
-  const remaining = Math.round((35 - Number(await slider.inputValue())) / 0.1);
-  for (let i = 0; i < remaining; i++) await slider.press('ArrowRight');
-  await expect.poll(() => number(page, 'progress')).toBeCloseTo(0.35, 3);
-  await expect.poll(() => number(page, 'draw')).toBeCloseTo(1, 3);
+// Reach canonical timeline points through native range keyboard interactions.
+async function keyboardProgress(page: Page, progress: number) {
+  const slider=page.getByRole('slider',{name:'Progreso'});await slider.focus();await slider.press('Home');
+  const target=progress*100;
+  for(let i=0;i<Math.floor(target/10);i++)await slider.press('PageUp');
+  const remaining=Math.round((target-Number(await slider.inputValue()))/.1);
+  for(let i=0;i<Math.abs(remaining);i++)await slider.press(remaining>0?'ArrowRight':'ArrowLeft');
+  await expect.poll(()=>number(page,'progress')).toBeCloseTo(progress,3);await waitForRendered(page);
 }
-
-test('Draw → Extrude → Reveal renders complete geometry and reconstructs earlier camera and walls', async ({ page }, info) => {
+test('Spatial Draw → Extrude → Reveal reconstructs earlier camera and walls', async ({ page }, info) => {
   await ready(page);
   const initial = await capture(page, info, 'sequence-initial');
-  await keyboardDrawEnd(page);
+  await keyboardProgress(page, createDefaultProject().timeline.drawEnd);
   await expect.poll(() => number(page, 'wall-height')).toBeCloseTo(0, 3);
   const draw = await capture(page, info, 'sequence-draw-complete'); const drawCamera = await camera(page);
   await button(page, 'Extrude');
@@ -85,4 +85,14 @@ test('public mount/update/dispose cycles remove actual canvases and retain no ac
   });
   expect(cycles).toEqual(Array.from({ length: 3 }, () => ({ mounted: 1, updated: 1, removed: 0, disposed: true })));
   await expect(page.locator('canvas[role="img"]')).toHaveCount(1);
+});
+
+test('final Reveal reaches aerial elevation and holds the same frame through the remaining scroll',async({page,isMobile},info)=>{
+  await ready(page);const project=createDefaultProject();await keyboardProgress(page,project.camera.storyboard.holdStart);
+  await expect(view(page)).toHaveAttribute('data-camera-profile',isMobile?'mobile':'desktop');
+  const elevation=Number(await view(page).getAttribute('data-camera-elevation'));expect(elevation).toBeGreaterThanOrEqual(55);expect(elevation).toBeLessThanOrEqual(70);
+  const pose=await view(page).getAttribute('data-camera-position'),lookAt=await view(page).getAttribute('data-camera-look-at');
+  const first=await capture(page,info,'hold-arrival');await button(page,'Reveal');
+  expect(await view(page).getAttribute('data-camera-position')).toBe(pose);expect(await view(page).getAttribute('data-camera-look-at')).toBe(lookAt);
+  const last=await capture(page,info,'hold-final');expect(changedPixels(first,last,0),'Hold is a spatially fixed frame, not a timer or a slow orbit').toBe(0);
 });

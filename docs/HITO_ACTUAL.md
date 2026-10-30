@@ -38,3 +38,15 @@ Validación final: TypeScript, 73 unitarios (contrato/timeline/lifecycle/geometr
 Correcciones durante QA: cuantización/dedup resize en Core, sincronización del host desde scroll real, readiness por renderedProgress, encuadre continuo con up vector compartido y desplazamiento de cota lateral fuera de la silueta del muro. No se rebajaron los asserts visuales ni se aprobaron baselines a ciegas.
 
 Corridor: 307 archivos comparados de nuevo con inventario/hash inicial; idénticos (excluidos .git/node_modules). Sin cambios remotos, despliegues ni modificaciones del origen. M4/M5 pendientes de autorización; este cierre se limita al MVP visual local.
+
+## Nuevo encargo recibido · 30/10/2026
+
+El usuario entrega M3.5 Cinematic Redesign al Orchestrator. Fuente íntegra: docs/M3_5_CINEMATIC_BRIEF.md. Autorización limitada a M3.5-A (storyboard, cámara y composición provisional). Requiere seis encuadres desktop/móvil y grabaciones del recorrido; detenerse para aprobación visual antes de B/C. No M4/M5 ni push/deploy de M3.5. M1–M3 ya publicados en14da40ae8a3f01358b502e0942908185648bdc8e, verificado origin/main.
+
+## Inicio M3.5-A · 30/10/2026
+
+Autorización explícita: «completa M3.5-A». Solo cámara/storyboard y composición provisional; gate visual del usuario antes de B. Reservas: Core en src/contracts/{BlueprintProject,defaults,validate,ports}.ts; 3D en src/scene/**; QA en tests/**, e2e/** y arnés/evidencia artifacts/m35a; Orchestrator en docs y proyección de diagnósticos del host cuando contrato esté listo. Contrato aprobado camera.storyboard con holdStart y perfiles desktop/mobile de keyframes {at,position,lookAt,fit?}; coords normalizadas x/y*width,z*depth; worldUp Y; fit solo último frame y hold hasta1. Defaults dependen de los límites de la única timeline. Sin push/deploy ni cambios en Corridor.
+
+## Entrega M3.5-A · publicada; aprobación visual pendiente
+
+Implementación y QA técnico completados; código, informe y galería `artifacts/m35a/` publicados en `goblinsami/scrollix-blueprint`. La galería contiene 12 capturas originales, 2 WebM del recorrido completo, 12 fotogramas decodificados y manifiestos. Informe con imágenes y enlaces directos: [docs/reports/M3.5-A.md](reports/M3.5-A.md). La aprobación artística del usuario sigue pendiente. DETENIDO antes de M3.5-B/C y M4/M5.

@@ -1,21 +1,14 @@
 import type { BlueprintProject } from '../contracts/BlueprintProject';
 import { sampleTimeline } from '../core/timeline';
-export interface SceneMotion {
-  wallHeight: number;
-  direction: readonly [number,number,number];
-  up: readonly [number,number,number];
-  targetY: number;
+import { sampleCameraPath } from './cameraPath';
+import type { CameraPose,CameraProfile } from './cameraPath';
+export interface SceneMotion extends CameraPose {
+  wallHeight:number;direction:readonly[number,number,number];targetY:number;
 }
 const smooth=(t:number)=>t*t*(3-2*t);
-/** Every transform is an absolute function of progress, never an accumulated delta. */
-export function sampleSceneMotion(progress:number, project:BlueprintProject):SceneMotion {
-  const state=sampleTimeline(progress,project.timeline);
-  const extrude=smooth(state.extrude), reveal=smooth(state.reveal);
-  const tilt=(35*extrude+15*reveal)*Math.PI/180;
-  const yaw=(30*extrude+8*reveal)*Math.PI/180;
-  const wallHeight=project.structure.wallHeight*extrude;
-  return {wallHeight,targetY:wallHeight/2,
-    direction:[Math.sin(tilt)*Math.sin(yaw),Math.cos(tilt),Math.sin(tilt)*Math.cos(yaw)],
-    up:[-Math.cos(tilt)*Math.sin(yaw),Math.sin(tilt),-Math.cos(tilt)*Math.cos(yaw)],
-  };
+/** One global timeline drives both the geometry and authored spatial storyboard. */
+export function sampleSceneMotion(progress:number,project:BlueprintProject,profile:CameraProfile='desktop',aspect=16/9):SceneMotion {
+  const state=sampleTimeline(progress,project.timeline),pose=sampleCameraPath(progress,project,profile,aspect);
+  const ray=[pose.position[0]-pose.lookAt[0],pose.position[1]-pose.lookAt[1],pose.position[2]-pose.lookAt[2]],length=Math.hypot(...ray);
+  return{...pose,wallHeight:project.structure.wallHeight*smooth(state.extrude),targetY:pose.lookAt[1],direction:[ray[0]!/length,ray[1]!/length,ray[2]!/length]};
 }
