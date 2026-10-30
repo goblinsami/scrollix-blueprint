@@ -1,0 +1,33 @@
+{
+  "profile": "desktop",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "mimeType": "video/webm;codecs=vp9,opus",
+  "silentClockTrack": true,
+  "capturePreservesDrawingBuffer": true,
+  "bytes": 8886537,
+  "width": 1358,
+  "height": 547,
+  "frameRequests": 1212,
+  "durationRequestedMs": 20200,
+  "elapsedMs": 20388.09999999404,
+  "frameTime": {
+    "mean": 16.680511973575737,
+    "p95": 16.799999999999955,
+    "max": 16.90000000000009
+  },
+  "finalProgress": "1",
+  "playback": {
+    "duration": 20.178,
+    "ended": true,
+    "endedAt": 20.178,
+    "initialDuration": 20.178,
+    "width": 1358,
+    "height": 547,
+    "decodedFrames": 77,
+    "currentTime": 20.178
+  },
+  "errors": []
+}

@@ -1,0 +1,297 @@
+{
+  "generatedAt": "2026-10-30T10:13:53.217Z",
+  "baseCommit": "14da40ae8a3f01358b502e0942908185648bdc8e",
+  "approval": "Technical QA passed. Artistic approval pending user review; B/C not started.",
+  "tests": {
+    "unit": 93,
+    "e2e": 36,
+    "typecheck": "PASS",
+    "build": "PASS"
+  },
+  "counts": {
+    "captures": 12,
+    "videos": 2,
+    "decodedFrames": 12
+  },
+  "sources": [
+    {
+      "path": "src/contracts/BlueprintProject.ts",
+      "bytes": 1080,
+      "sha256": "0cca1135cc64370dcdb271168e26093407d09763a2ed6f9d812b965a6718782f"
+    },
+    {
+      "path": "src/contracts/defaults.ts",
+      "bytes": 2297,
+      "sha256": "7ab6e3846e72097a33dfdb23985c1cf1a91ff18f38e0e1292baf527af547b898"
+    },
+    {
+      "path": "src/contracts/ports.ts",
+      "bytes": 1717,
+      "sha256": "bce371ce9f83f49e0aee55600b317413e87b731e272de33b694487c6ef4e7a6f"
+    },
+    {
+      "path": "src/contracts/validate.ts",
+      "bytes": 9796,
+      "sha256": "7ae657e8bc3158bb11b156f8d996690b58a79c0cdeb138f3c20105342f8757d8"
+    },
+    {
+      "path": "src/core/runtime.ts",
+      "bytes": 7552,
+      "sha256": "589be5dc198177f9ee73c1ecbe3100796549d421fc970f3a0976378c45d2d17e"
+    },
+    {
+      "path": "src/core/timeline.ts",
+      "bytes": 1163,
+      "sha256": "907e1639e1739095fdd7aca05be6cd5c67c5b2dd2ae453a531b51374afc0ef56"
+    },
+    {
+      "path": "src/index.ts",
+      "bytes": 897,
+      "sha256": "9578eeb8d4c691b2d11b03fdbfbd6d596127d659a5250ec73a454b11d952f40b"
+    },
+    {
+      "path": "src/main.ts",
+      "bytes": 181,
+      "sha256": "2e371dba46775139852083dbb70861ef54c294cabe9a04569bd01dd4a1d41baa"
+    },
+    {
+      "path": "src/playground/mountPlayground.ts",
+      "bytes": 11293,
+      "sha256": "6fc6aa4e3487934889965adae4271ef7529aca790c8c27e4436d10ad8af0825e"
+    },
+    {
+      "path": "src/scene/cameraPath.ts",
+      "bytes": 2640,
+      "sha256": "09869fc85b184f2ca7aa7fa02c441ff79be7426385caa1de8773096a499db12a"
+    },
+    {
+      "path": "src/scene/createBlueprintScene.ts",
+      "bytes": 3745,
+      "sha256": "303ef6a6c04b64100fb700c22aa053b3bfd556a263c32565098be1a60634c27c"
+    },
+    {
+      "path": "src/scene/floorPlan.ts",
+      "bytes": 3787,
+      "sha256": "daa2a9df429ead24dab1ec53627fb64e5d2fb5dc5bfd27238f50b8be4c3bad2c"
+    },
+    {
+      "path": "src/scene/framing.ts",
+      "bytes": 1500,
+      "sha256": "6c233224bd0dcef0b80826b976836f8c96f6137cb46bdc843e88625313415997"
+    },
+    {
+      "path": "src/scene/motion.ts",
+      "bytes": 1031,
+      "sha256": "7a7471bbfa4236986d0a8dce7a3580905994c8fa0b8d127a1b5ca23470a136a3"
+    },
+    {
+      "path": "src/scene/palettes.ts",
+      "bytes": 787,
+      "sha256": "dca30519435a45a1dca60774feaaad4b3abeff51382372fb01030aecd57e621d"
+    },
+    {
+      "path": "src/scene/ResourceOwner.ts",
+      "bytes": 1440,
+      "sha256": "67ebdfce8693d5d6ee02af3251dada74f6861a39323c558690611764123ff1d0"
+    },
+    {
+      "path": "src/scene/sceneGeometry.ts",
+      "bytes": 6493,
+      "sha256": "05466ef4d3807cdc1fd5ee3c26fe37d95c341ac5efa2bdd627ed5b7da5a6774d"
+    },
+    {
+      "path": "src/style.css",
+      "bytes": 9377,
+      "sha256": "55eca989148c309f2167000ad4e1a4166a19e001e216faf964e6ba2fda6f7c3e"
+    }
+  ],
+  "harness": [
+    {
+      "path": "scripts/capture-m35a.mjs",
+      "bytes": 5996,
+      "sha256": "6e2dd5d164bb41d04b85c6c248eddfbd9458934f852694c683364b6120f59521"
+    },
+    {
+      "path": "scripts/manifest-m35a.mjs",
+      "bytes": 2267,
+      "sha256": "4f46f68aff6f13040a3779c29505a15328853a96896e1790a5361adbb78964a5"
+    },
+    {
+      "path": "scripts/record-m35a.mjs",
+      "bytes": 13938,
+      "sha256": "9c70c2042d6c6c0cbd1603aadcc9e85785d20c1fc3264017a2cfa4c8edc27848"
+    },
+    {
+      "path": "scripts/webm-duration.mjs",
+      "bytes": 2882,
+      "sha256": "1002854f3c5f98d8fd1f77bd23b9df7f371cb750b30b303bc13d39ba5d4975b9"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "artifacts/m35a/captures.json",
+      "bytes": 10217,
+      "sha256": "f92b2339038c968892b59430853c09bdcbbaf408d8804e8c3b828ed0f060b05c"
+    },
+    {
+      "path": "artifacts/m35a/desktop-01-draw-start.png",
+      "bytes": 92531,
+      "sha256": "9d2fe71ff2b9d7d7314c113437a114d8e5b6fc8794bfd5646576a72d310f543e"
+    },
+    {
+      "path": "artifacts/m35a/desktop-02-draw-mid.png",
+      "bytes": 107831,
+      "sha256": "03b35c820699afff9c6a7b444f54566a109abe36fa446e57e515c71245c7591b"
+    },
+    {
+      "path": "artifacts/m35a/desktop-03-draw-end.png",
+      "bytes": 114279,
+      "sha256": "63f27f3a1a5d0f3db2fb679b863bd18de8f6af06e67c746d87aa53d711cba872"
+    },
+    {
+      "path": "artifacts/m35a/desktop-04-extrude-mid.png",
+      "bytes": 79514,
+      "sha256": "4ac0ac6677ef215d4347f5c6224ef0acf9511afe9d41b689af4d8ee4a330bc9a"
+    },
+    {
+      "path": "artifacts/m35a/desktop-05-reveal-start.png",
+      "bytes": 60150,
+      "sha256": "266493eb6b8185f1509792d3d4bce887bc44a9b154d9bfc61bff4fe48fbc9f24"
+    },
+    {
+      "path": "artifacts/m35a/desktop-06-reveal-final.png",
+      "bytes": 293898,
+      "sha256": "a47607f512e3d80d9e21b41d5fe0bb775578aebd2142912fb998d078561648cd"
+    },
+    {
+      "path": "artifacts/m35a/desktop-journey.webm",
+      "bytes": 8886537,
+      "sha256": "761685425eefcb30852434bcbb2f4ba409e7631bd0a268621b3d5ad97615497e"
+    },
+    {
+      "path": "artifacts/m35a/desktop-recording.json",
+      "bytes": 703,
+      "sha256": "7cc5059119843dd66652003f247f92d4b68507e1d6a076110b42087bbe8ac3eb"
+    },
+    {
+      "path": "artifacts/m35a/desktop-video-01-draw-start.png",
+      "bytes": 280090,
+      "sha256": "d1c90a63e2329f676a398171d02d0dabce9a7b4b44f0da5c32a6b7b21eff7357"
+    },
+    {
+      "path": "artifacts/m35a/desktop-video-02-draw-mid.png",
+      "bytes": 344859,
+      "sha256": "9669cce6994da5e249df48497f8686b847ea592e2f6e53ee918ec840183d1165"
+    },
+    {
+      "path": "artifacts/m35a/desktop-video-03-draw-end.png",
+      "bytes": 372613,
+      "sha256": "5b5a47fa49f176bc7733e118ce45f3381a13b1bbb2dd44eb40a16c3739e0821a"
+    },
+    {
+      "path": "artifacts/m35a/desktop-video-04-extrude-mid.png",
+      "bytes": 259983,
+      "sha256": "896b509e1b9b395fd32a4a27b8cd25d5f45b93c118739862de0c8297f956936e"
+    },
+    {
+      "path": "artifacts/m35a/desktop-video-05-reveal-start.png",
+      "bytes": 133833,
+      "sha256": "70b54730a23ffca8327a7b392c8011605f76d6b2919f6786077f278179440927"
+    },
+    {
+      "path": "artifacts/m35a/desktop-video-06-reveal-final.png",
+      "bytes": 889618,
+      "sha256": "ef5d0cf89591ff836c60afb6ad19a037322134bcbb927503b49fd3dfe45fde38"
+    },
+    {
+      "path": "artifacts/m35a/index.html",
+      "bytes": 6430,
+      "sha256": "e7218a82a86541ffbce4d4c6ade5758460c8ad3bfc7fc3b48dd8cbff1a0396b2"
+    },
+    {
+      "path": "artifacts/m35a/mobile-01-draw-start.png",
+      "bytes": 39009,
+      "sha256": "f1b56acd422bc4c73a00fc70b04c09e07045a2f4a8f5071d8b83b403526e9ad1"
+    },
+    {
+      "path": "artifacts/m35a/mobile-02-draw-mid.png",
+      "bytes": 42021,
+      "sha256": "7333798b27add6a01b68f1b0a195ca6866b800857d67ce41e000c094112806df"
+    },
+    {
+      "path": "artifacts/m35a/mobile-03-draw-end.png",
+      "bytes": 34263,
+      "sha256": "73013997c0f38d8ce2f1f80aa4278480b48ab2895df6001e2fa0d5f7ce091248"
+    },
+    {
+      "path": "artifacts/m35a/mobile-04-extrude-mid.png",
+      "bytes": 30157,
+      "sha256": "8bd6ad6a23c873784bec9503b2a24865ead931a4852071d380cd12e1c8658012"
+    },
+    {
+      "path": "artifacts/m35a/mobile-05-reveal-start.png",
+      "bytes": 35891,
+      "sha256": "e6497bf77e7a687050044e14f3d09d192fe4c9e99d5b212a8cee92b2139d735f"
+    },
+    {
+      "path": "artifacts/m35a/mobile-06-reveal-final.png",
+      "bytes": 130153,
+      "sha256": "7a9ea25cf009524e748519a582c35a44de4aa7678a6bb57b5e3cfd13608cf6ee"
+    },
+    {
+      "path": "artifacts/m35a/mobile-journey.webm",
+      "bytes": 7123998,
+      "sha256": "ad1f8d63b95be57afd592c83c5435aa005560cbebc76c2c2a47e1934a5fc5e54"
+    },
+    {
+      "path": "artifacts/m35a/mobile-recording.json",
+      "bytes": 701,
+      "sha256": "8a85fce57af61a540496ed044e52d385b954f85f92d6435ce617101d7f9c7bb1"
+    },
+    {
+      "path": "artifacts/m35a/mobile-video-01-draw-start.png",
+      "bytes": 75183,
+      "sha256": "ce149a50be6dda7321746641b4083a1f5ff3f3f231c2c27cbdf7c342601c2284"
+    },
+    {
+      "path": "artifacts/m35a/mobile-video-02-draw-mid.png",
+      "bytes": 93981,
+      "sha256": "9b98453898f187c351bd8df6c61ed413b866a3528b70fe73e438c01116402dff"
+    },
+    {
+      "path": "artifacts/m35a/mobile-video-03-draw-end.png",
+      "bytes": 90891,
+      "sha256": "f2cb88901a82dc09f455847a243fae7d177ffcb02aacafbf1186f9f89db22030"
+    },
+    {
+      "path": "artifacts/m35a/mobile-video-04-extrude-mid.png",
+      "bytes": 64620,
+      "sha256": "6bedb67d93fbeab7f3b0675c767620d516e38b625583efb516cb7c804900ef04"
+    },
+    {
+      "path": "artifacts/m35a/mobile-video-05-reveal-start.png",
+      "bytes": 84193,
+      "sha256": "af94fda2a45ca2ff99f3ded8b399513baf85a17f01a9651aa6844a9b46efcbf2"
+    },
+    {
+      "path": "artifacts/m35a/mobile-video-06-reveal-final.png",
+      "bytes": 243228,
+      "sha256": "4d09c22ef258019223f77c75e7074af043f8b4e15734a2a647fe84837cffd829"
+    },
+    {
+      "path": "artifacts/m35a/QA_REPORT.md",
+      "bytes": 4069,
+      "sha256": "27fc21c4e9687caf3129616f32dddbd45a4503cf90db3f10909eed519a9ee595"
+    },
+    {
+      "path": "artifacts/m35a/recordings.json",
+      "bytes": 1542,
+      "sha256": "9e5c34acbe1fc718682e67a27c76fd7c1234b615aee6b69f3708565917147701"
+    },
+    {
+      "path": "artifacts/m35a/video-thumbnails.json",
+      "bytes": 2777,
+      "sha256": "4e20f0a845f8f18b211ec2337a9ad7a1b6076e331dd28070f2bdc179564be6b4"
+    }
+  ]
+}

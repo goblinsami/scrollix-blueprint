@@ -1,0 +1,122 @@
+[
+  {
+    "profile": "desktop",
+    "filename": "desktop-video-01-draw-start.png",
+    "name": "01-draw-start",
+    "progress": 0,
+    "time": 0.001,
+    "width": 1358,
+    "height": 547,
+    "meanLuma": 238.5058191714015
+  },
+  {
+    "profile": "desktop",
+    "filename": "desktop-video-02-draw-mid.png",
+    "name": "02-draw-mid",
+    "progress": 0.175,
+    "time": 3.351063,
+    "width": 1358,
+    "height": 547,
+    "meanLuma": 238.30837659124197
+  },
+  {
+    "profile": "desktop",
+    "filename": "desktop-video-03-draw-end.png",
+    "name": "03-draw-end",
+    "progress": 0.35,
+    "time": 6.702127,
+    "width": 1358,
+    "height": 547,
+    "meanLuma": 238.23395150815952
+  },
+  {
+    "profile": "desktop",
+    "filename": "desktop-video-04-extrude-mid.png",
+    "name": "04-extrude-mid",
+    "progress": 0.5249999999999999,
+    "time": 10.053191,
+    "width": 1358,
+    "height": 547,
+    "meanLuma": 210.17987378034968
+  },
+  {
+    "profile": "desktop",
+    "filename": "desktop-video-05-reveal-start.png",
+    "name": "05-reveal-start",
+    "progress": 0.7,
+    "time": 13.404255,
+    "width": 1358,
+    "height": 547,
+    "meanLuma": 213.60601948579009
+  },
+  {
+    "profile": "desktop",
+    "filename": "desktop-video-06-reveal-final.png",
+    "name": "06-reveal-final",
+    "progress": 1,
+    "time": 20.09,
+    "width": 1358,
+    "height": 547,
+    "meanLuma": 237.18296824411206
+  },
+  {
+    "profile": "mobile",
+    "filename": "mobile-video-01-draw-start.png",
+    "name": "01-draw-start",
+    "progress": 0,
+    "time": 0.001,
+    "width": 360,
+    "height": 552,
+    "meanLuma": 238.82597960281626
+  },
+  {
+    "profile": "mobile",
+    "filename": "mobile-video-02-draw-mid.png",
+    "name": "02-draw-mid",
+    "progress": 0.175,
+    "time": 3.351063,
+    "width": 360,
+    "height": 552,
+    "meanLuma": 238.7231615673847
+  },
+  {
+    "profile": "mobile",
+    "filename": "mobile-video-03-draw-end.png",
+    "name": "03-draw-end",
+    "progress": 0.35,
+    "time": 6.702127,
+    "width": 360,
+    "height": 552,
+    "meanLuma": 239.79804079444222
+  },
+  {
+    "profile": "mobile",
+    "filename": "mobile-video-04-extrude-mid.png",
+    "name": "04-extrude-mid",
+    "progress": 0.5249999999999999,
+    "time": 10.053191,
+    "width": 360,
+    "height": 552,
+    "meanLuma": 223.07034353194774
+  },
+  {
+    "profile": "mobile",
+    "filename": "mobile-video-05-reveal-start.png",
+    "name": "05-reveal-start",
+    "progress": 0.7,
+    "time": 13.404255,
+    "width": 360,
+    "height": 552,
+    "meanLuma": 222.3690552871811
+  },
+  {
+    "profile": "mobile",
+    "filename": "mobile-video-06-reveal-final.png",
+    "name": "06-reveal-final",
+    "progress": 1,
+    "time": 20.09,
+    "width": 360,
+    "height": 552,
+    "meanLuma": 236.68137412777597
+  }
+]
