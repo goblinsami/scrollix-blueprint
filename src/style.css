@@ -7,7 +7,7 @@ a { color: inherit; }
 button, select, input[type="range"] { cursor: pointer; }
 :focus-visible { outline: 2px solid #bd5a32; outline-offset: 4px; }
 [hidden] { display: none !important; }
-.journey { height: calc(100svh + max(2400px, 400svh)); }
+.journey { --scroll-distance: 1000svh; height: calc(100svh + var(--scroll-distance)); }
 .studio-shell { --paper: #f4f1e8; --ink: #292c25; --muted: #72756a; --line: #d6d5c9; --panel: #eeece2; --accent: #ad5939; position: sticky; top: 0; height: 100svh; min-height: 0; padding: 0 40px; color: var(--ink); background: var(--paper); display: flex; flex-direction: column; overflow: hidden; }
 .studio-shell[data-preset="inverted-blueprint"] { --paper: #122739; --ink: #e8eee9; --muted: #a2b4bf; --line: #39505e; --panel: #183044; --accent: #d2b187; }
 .studio-shell[data-preset="material-study"] { --paper: #e9e3d6; --ink: #423a31; --muted: #7b705f; --line: #c9bdab; --panel: #e0d7c8; --accent: #9b5435; }
@@ -62,6 +62,7 @@ h1 > span { color: var(--accent); }
 .back-to-start span { margin-left: 18px; }
 @media (max-width: 850px) { .studio-shell { padding: 0 22px; } .masthead { height: 62px; flex-basis: 62px; } .project-heading { padding: 24px 0; } .control-desk { gap: 20px; padding: 18px; } .phase-navigation button { padding: 9px 8px; } .masthead-note { display: none; } .project-reference { font-size: 9px; } }
 @media (max-width: 600px) {
+  .journey { --scroll-distance: 600svh; }
   .studio-shell { padding: 0 14px; }
   .masthead { height: 52px; flex-basis: 52px; gap: 10px; }
   .wordmark { font-size: 25px; }

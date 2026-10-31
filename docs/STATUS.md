@@ -1,4 +1,19 @@
 # Estado · 31/10/2026
+## Issue #2 · M3.5-A.3 — Recorrido sticky ampliado
+
+Completada con un único agente. Único cambio de producto en CSS: distancia efectiva de 10 alturas de viewport en escritorio y 6 en móvil (breakpoint existente <=600 px). Journey añade la altura del sticky: total 11 pantallas desktop / 7 móvil. JS continúa leyendo las dimensiones reales del DOM, sin duplicar la fórmula.
+
+Verificación real en Edge headless:
+
+| Viewport | Distancia efectiva | Altura total journey |
+|---|---|---|
+| 1440×900 | 9000 px | 9900 px |
+| 390×844 | 5064 px | 5908 px |
+| 320×568 | 3408 px | 3976 px |
+
+También verificado el límite responsive: 600×450 →2700 px; 601×450 →4500 px. E2E comprueban avance/reversa, 100%, sticky, salida al HTML y reduced motion. Smoothing de130 ms, timeline, controles, cámara, geometría y materiales sin cambios.
+
+Pruebas: npm.cmd run check PASS (TypeScript,104 unitarios y build); 6 E2E focalizados PASS (18,6 s) mediante manual-scroll/scaffold y grep "calibrated native scroll|wheel traverses". Sin vídeos, galerías ni nuevas capturas. Persiste aviso de bundle >500 kB. Commit/push a main autorizados para esta issue; detenerse sin otros hitos.
 
 ## Issue #1 · M3.5-A.2 — Suavizado del scroll manual
 
