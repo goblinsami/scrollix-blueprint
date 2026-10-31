@@ -34,7 +34,7 @@ export async function mountPlayground(app: HTMLElement): Promise<() => void> {
           </div>
           <div class="control-desk" aria-label="Controles del playground">
             <div class="progress-control">
-              <div class="control-heading"><label for="progress">Progreso</label><output for="progress" id="progress-value">0.0<span>%</span></output></div>
+              <div class="control-heading"><label for="progress">Progreso</label><div class="screens-control"><label for="screens">Pantallas</label><input id="screens" type="number" min="1" max="30" step="1" title="Entre 1 y 30 pantallas"><button type="button" id="screens-auto" aria-label="Restablecer pantallas automáticas">Auto</button></div><output for="progress" id="progress-value">0.0<span>%</span></output></div>
               <input id="progress" type="range" min="0" max="100" step="0.1" value="0" aria-describedby="progress-help">
               <p id="progress-help">Desplázate o arrastra para recorrer el proyecto.</p>
             </div>
@@ -60,6 +60,10 @@ export async function mountPlayground(app: HTMLElement): Promise<() => void> {
   const slider = element<HTMLInputElement>('#progress');
   const output = element<HTMLOutputElement>('#progress-value');
   const preset = element<HTMLSelectElement>('#preset');
+  const screens = element<HTMLInputElement>('#screens');
+  const screensAuto = element<HTMLButtonElement>('#screens-auto');
+  const syncScreens = () => { screens.value = getComputedStyle(journey).getPropertyValue('--screens').trim(); };
+  syncScreens();
   const error = element<HTMLParagraphElement>('.runtime-error');
   const placeholder = element<HTMLElement>('.scene-placeholder');
   const phaseLabel = element<HTMLElement>('.phase-indicator');
@@ -132,8 +136,18 @@ export async function mountPlayground(app: HTMLElement): Promise<() => void> {
     window.scrollTo({ top: top + progress * distance, behavior: 'instant' });
     readScroll(true);
   };
+  const changeScreens = (count: number | null) => {
+    if (!runtime || disposed) return;
+    const progress = runtime.getState().progress;
+    if (count === null) journey.style.removeProperty('--screens');
+    else journey.style.setProperty('--screens', String(count));
+    syncScreens();
+    // Reposition native scroll after layout so the visible phase is preserved.
+    goTo(progress);
+  };
   const resize = () => {
     if (!runtime || disposed) return;
+    syncScreens();
     const bounds = viewport.getBoundingClientRect();
     runtime.resize(Math.max(1, bounds.width), Math.max(1, bounds.height), window.devicePixelRatio || 1);
     readScroll(true);
@@ -172,6 +186,12 @@ export async function mountPlayground(app: HTMLElement): Promise<() => void> {
     }, { passive: true, signal });
     window.addEventListener('resize', resize, { passive: true, signal });
     slider.addEventListener('input', () => goTo(Number(slider.value) / 100), { signal });
+    screens.addEventListener('change', () => {
+      const count = screens.valueAsNumber;
+      if (!Number.isInteger(count) || count < 1 || count > 30) { syncScreens(); return; }
+      changeScreens(count);
+    }, { signal });
+    screensAuto.addEventListener('click', () => changeScreens(null), { signal });
     for (const button of Array.from(app.querySelectorAll<HTMLButtonElement>('[data-stage]'))) {
       button.addEventListener('click', () => {
         const stage = button.dataset.stage;

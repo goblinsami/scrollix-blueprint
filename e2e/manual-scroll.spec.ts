@@ -73,3 +73,40 @@ test('enabling reduced motion cancels pending damping and follows real scroll im
   await expect(view).toHaveAttribute('data-target-progress','0');
   await expect(view).toHaveAttribute('data-progress','0');await waitForRendered(page);
 });
+
+
+test('screen count is configurable without losing progress and Auto restores responsive defaults',async({page})=>{
+  await page.goto('/'); const view=page.getByTestId('blueprint-viewport');
+  await expect(view).toHaveAttribute('data-scene-ready','true');
+  const input=page.getByRole('spinbutton',{name:'Pantallas'});
+  const size=page.viewportSize()!;
+  await expect(input).toHaveValue(size.width<=600?'6':'10');
+  await page.getByRole('button',{name:'Extrude',exact:true}).click();
+  await waitForRendered(page);
+  const progress=Number(await view.getAttribute('data-progress'));
+  for(const count of [14,2]){
+    await input.fill(String(count)); await input.press('Tab');
+    await expect(view).toHaveAttribute('data-scroll-distance',String(size.height*count));
+    await expect.poll(async()=>Number(await view.getAttribute('data-progress'))).toBeCloseTo(progress,3);
+    await waitForRendered(page);
+  }
+  for(const invalid of ['0','31','1.5','']){
+    await input.fill(invalid);await input.press('Tab');await expect(input).toHaveValue('2');
+    await expect(view).toHaveAttribute('data-scroll-distance',String(size.height*2));
+  }
+  await page.getByRole('button',{name:'Reveal',exact:true}).click();
+  await expect(view).toHaveAttribute('data-progress','1');
+  await page.setViewportSize({width:600,height:500});
+  await expect(input).toHaveValue('2');await expect(view).toHaveAttribute('data-scroll-distance','1000');
+  await page.getByRole('button',{name:'Restablecer pantallas automáticas'}).click();
+  await expect(input).toHaveValue('6');await expect(view).toHaveAttribute('data-scroll-distance','3000');
+  await page.setViewportSize({width:601,height:500});
+  await expect(input).toHaveValue('10');await expect(view).toHaveAttribute('data-scroll-distance','5000');
+  expect(await page.locator('.control-heading').evaluate(element=>{
+    const bounds=element.getBoundingClientRect();
+    return Array.from(element.children).every(child=>{
+      const box=child.getBoundingClientRect();return box.left>=bounds.left-.5&&box.right<=bounds.right+.5;
+    });
+  }),'All controls fit the medium-width progress panel').toBe(true);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth)).toBe(false);
+});

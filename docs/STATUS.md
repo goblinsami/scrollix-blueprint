@@ -1,4 +1,9 @@
 # Estado · 31/10/2026
+## Playground · Pantallas configurables
+
+Añadido campo Pantallas (enteros 1–30) y botón Auto junto al progreso. Auto conserva los defaults CSS de10 desktop /6 móvil (<=600px); la selección manual prevalece incluso al cambiar de tamaño. CSS sigue siendo la única fuente de la fórmula de distancia. Cambiar/restablecer la duración reubica el scroll nativo conservando el progreso visible. Valores vacíos, decimales o fuera de rango se rechazan restaurando el valor aplicado.
+
+Validado:104 unitarios, TypeScript y build correctos;12 E2E de configuración/controles/scroll correctos. Tras ajustar el layout intermedio, revalidación de TypeScript/build y3E2E de configuración correctos, incluido encaje del panel a601px. Sin cambios en smoothing130ms, keyframes ni geometría. Sin nuevos hitos, vídeos o capturas de entrega. Persiste aviso de bundle >500kB.
 ## Issue #2 · M3.5-A.3 — Recorrido sticky ampliado
 
 Completada con un único agente. Único cambio de producto en CSS: distancia efectiva de 10 alturas de viewport en escritorio y 6 en móvil (breakpoint existente <=600 px). Journey añade la altura del sticky: total 11 pantallas desktop / 7 móvil. JS continúa leyendo las dimensiones reales del DOM, sin duplicar la fórmula.
