@@ -1,3 +1,4 @@
+import { createProgressSmoother } from './progressSmoother';
 import { createDefaultProject, mountBlueprint, validateBlueprintProject } from '../index';
 import type { ArtPreset, BlueprintProject, BlueprintRuntime } from '../index';
 import type { BlueprintState } from '../contracts/ports';
@@ -73,7 +74,6 @@ export async function mountPlayground(app: HTMLElement): Promise<() => void> {
   setTheme(project.art.preset);
 
   const updateState = (state: BlueprintState) => {
-    slider.value = String(state.progress * 100);
     output.textContent = (state.progress * 100).toFixed(1) + '%';
     phaseLabel.textContent = phaseNames[state.phase];
     viewport.dataset.progress = String(state.progress);
@@ -107,14 +107,22 @@ export async function mountPlayground(app: HTMLElement): Promise<() => void> {
     top: journey.getBoundingClientRect().top + window.scrollY,
     distance: Math.max(1, journey.offsetHeight - shell.offsetHeight),
   });
+  const progressSmoother = createProgressSmoother(value => runtime?.setProgress(value), {
+    now: () => performance.now(),
+    requestFrame: callback => requestAnimationFrame(callback),
+    cancelFrame: id => cancelAnimationFrame(id),
+  });
   let scrollFrame = 0;
-  const readScroll = () => {
+  const readScroll = (immediate = false) => {
     if (!runtime || disposed) return;
     const { top, distance } = scrollMetrics();
     const progress = Math.min(1, Math.max(0, (window.scrollY - top) / distance));
     viewport.dataset.scrollDistance = String(distance);
     viewport.dataset.scrollProgress = String(progress);
-    runtime.setProgress(progress);
+    viewport.dataset.targetProgress = String(progress);
+    // Keep range input attached to real scroll, not to a lagging render value.
+    slider.value = String(progress * 100);
+    progressSmoother.setTarget(progress, immediate);
   };
   const goTo = (progress: number) => {
     if (!runtime || disposed) return;
@@ -122,16 +130,17 @@ export async function mountPlayground(app: HTMLElement): Promise<() => void> {
     // The browser quantizes scroll positions to device pixels. Read that real
     // position immediately so controls and later scroll events sample one value.
     window.scrollTo({ top: top + progress * distance, behavior: 'instant' });
-    readScroll();
+    readScroll(true);
   };
   const resize = () => {
     if (!runtime || disposed) return;
     const bounds = viewport.getBoundingClientRect();
     runtime.resize(Math.max(1, bounds.width), Math.max(1, bounds.height), window.devicePixelRatio || 1);
-    readScroll();
+    readScroll(true);
   };
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const updateMotion = () => {
+    progressSmoother.setReducedMotion(motion.matches || project.accessibility.reducedMotion === 'always');
     shell.dataset.reducedMotion = String(motion.matches);
     element<HTMLElement>('.motion-note').hidden = !motion.matches;
   };
@@ -145,6 +154,7 @@ export async function mountPlayground(app: HTMLElement): Promise<() => void> {
     if (disposed) return;
     disposed = true;
     cancelAnimationFrame(scrollFrame);
+    progressSmoother.dispose();
     lifecycle.abort();
     resizeObserver?.disconnect();
     unsubscribe?.();
