@@ -89,7 +89,18 @@ test('public mount/update/dispose cycles remove actual canvases and retain no ac
 });
 
 test('final Reveal reaches aerial elevation and holds the same frame through the remaining scroll',async({page,isMobile},info)=>{
-  await ready(page);const project=createDefaultProject();await keyboardProgress(page,project.camera.storyboard.holdStart);
+  await ready(page);const project=createDefaultProject();
+  // Enter the hold at the first reachable native-scroll pixel, never just below
+  // its boundary after the browser rounds a fractional CSS scroll position.
+  const hold=project.camera.storyboard.holdStart;
+  await page.evaluate(progress=>{
+    const journey=document.querySelector<HTMLElement>('[data-testid="journey"]')!;
+    const shell=document.querySelector<HTMLElement>('.studio-shell')!;
+    const top=journey.getBoundingClientRect().top+window.scrollY;
+    window.scrollTo({top:Math.ceil(top+progress*(journey.offsetHeight-shell.offsetHeight)),behavior:'instant'});
+  },hold);
+  await expect.poll(()=>number(page,'progress')).toBeGreaterThanOrEqual(hold);
+  await waitForRendered(page);
   await expect(view(page)).toHaveAttribute('data-camera-profile',isMobile?'mobile':'desktop');
   const elevation=Number(await view(page).getAttribute('data-camera-elevation'));expect(elevation).toBeGreaterThanOrEqual(55);expect(elevation).toBeLessThanOrEqual(70);
   const pose=await view(page).getAttribute('data-camera-position'),lookAt=await view(page).getAttribute('data-camera-look-at');
