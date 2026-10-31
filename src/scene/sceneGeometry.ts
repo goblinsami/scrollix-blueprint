@@ -1,6 +1,7 @@
-import {BoxGeometry,BufferGeometry,CanvasTexture,DoubleSide,EdgesGeometry,Float32BufferAttribute,LineBasicMaterial,LineSegments,Mesh,MeshBasicMaterial,MeshStandardMaterial,PlaneGeometry,SRGBColorSpace} from 'three';
+import {BufferGeometry,CanvasTexture,DoubleSide,EdgesGeometry,Float32BufferAttribute,LineBasicMaterial,LineSegments,Mesh,MeshBasicMaterial,MeshStandardMaterial,PlaneGeometry,SRGBColorSpace} from 'three';
 import type {PerspectiveCamera,Scene} from 'three';
 import type {BlueprintProject} from '../contracts/BlueprintProject';
+import {buildWallUnion} from './wallUnion';
 import {buildFloorPlan,subdivideSegments} from './floorPlan';
 import type {PlanSegment} from './floorPlan';
 import type {ResourceOwner} from './ResourceOwner';
@@ -12,7 +13,9 @@ export function createSceneGeometry(scene:Scene,owner:ResourceOwner,project:Blue
   const plan=buildFloorPlan(project.structure.width,project.structure.depth);
   const groups:Array<{geometry:BufferGeometry;count:number;start:number;end:number}>=[];
   const labels:Array<{mesh:Mesh;start:number;baseWidth:number;baseX:number;side:boolean}>=[];
-  const walls:Array<{mesh:Mesh;length:number;heightScale:number}>=[];
+  const thickness=Math.max(.09,Math.min(project.structure.width,project.structure.depth)*.012);
+  const union=buildWallUnion(plan.wallAxes,thickness);
+  const wallGeometry=owner.ownGeometry(union.geometry);
   let visibleSegments=0,totalSegments=0;
   const scale=Math.max(project.structure.width,project.structure.depth);
   // This is ground, not a finite model board: its edge lies far beyond the visible frustum.
@@ -32,7 +35,8 @@ export function createSceneGeometry(scene:Scene,owner:ResourceOwner,project:Blue
   for(let x=-extent;x<=extent;x+=gridStep)grid.push({start:[x,-extent],end:[x,extent]});
   for(let z=-extent;z<=extent;z+=gridStep)grid.push({start:[-extent,z],end:[extent,z]});
   lines(grid,palette.grid,.7,-1,0,false);
-  lines(plan.structural,palette.ink,1,0,.72);
+  lines(plan.structural,palette.muted,.5,0,.60);
+  lines(union.footprint,palette.ink,1,.08,.76);
   lines(plan.door,palette.accent,1,.22,.62);
   lines(plan.annotations,palette.muted,1,.65,1);
   for(let i=0;i<plan.labels.length;i++){
@@ -47,21 +51,16 @@ export function createSceneGeometry(scene:Scene,owner:ResourceOwner,project:Blue
     mesh.position.set(label.position[0],.025,label.position[1]);mesh.visible=false;mesh.renderOrder=10;scene.add(mesh);
     labels.push({mesh,start:i===0?.88:.94,baseWidth,baseX:label.position[0],side:i===1});
   }
-  const wallGeometry=owner.ownGeometry(new BoxGeometry(1,1,1)),edgeGeometry=owner.ownGeometry(new EdgesGeometry(wallGeometry));
+  const edgeGeometry=owner.ownGeometry(new EdgesGeometry(wallGeometry));
   const wallMaterial=owner.ownMaterial(new MeshStandardMaterial({color:palette.wall,roughness:.9,metalness:.02}));
   const edgeMaterial=owner.ownMaterial(new LineBasicMaterial({color:palette.edge,transparent:true,opacity:.65}));
-  for(const axis of plan.wallAxes){
-    const dx=axis.end[0]-axis.start[0],dz=axis.end[1]-axis.start[1];
-    const mesh=new Mesh(wallGeometry,wallMaterial);mesh.position.set((axis.start[0]+axis.end[0])/2,0,(axis.start[1]+axis.end[1])/2);
-    mesh.rotation.y=-Math.atan2(dz,dx);mesh.visible=false;mesh.add(new LineSegments(edgeGeometry,edgeMaterial));scene.add(mesh);
-    walls.push({mesh,length:Math.hypot(dx,dz),heightScale:axis.heightScale});
-  }
+  const wallMesh=new Mesh(wallGeometry,wallMaterial);wallMesh.visible=false;
+  wallMesh.add(new LineSegments(edgeGeometry,edgeMaterial));scene.add(wallMesh);
   return{
     plan,
     setDraw(draw:number){visibleSegments=0;for(const group of groups){const fraction=Math.max(0,Math.min(1,(draw-group.start)/(group.end-group.start)));const count=Math.floor(group.count*fraction+1e-8);group.geometry.setDrawRange(0,count*2);visibleSegments+=count;}for(const label of labels)label.mesh.visible=draw>=label.start;},
     applyMotion(motion:SceneMotion,camera:PerspectiveCamera,viewportHeight:number){
-      const thickness=Math.max(.09,Math.min(project.structure.width,project.structure.depth)*.012);
-      for(const wall of walls){const h=motion.wallHeight*wall.heightScale;wall.mesh.visible=h>0;wall.mesh.position.y=h/2;wall.mesh.scale.set(wall.length,h,thickness);}
+      wallMesh.visible=motion.wallHeight>0;wallMesh.scale.y=motion.wallHeight;
       for(const label of labels){
         const clearance=motion.wallHeight*Math.max(0,motion.direction[0])/Math.max(.2,motion.direction[1]);
         label.mesh.position.x=label.baseX-(label.side?clearance:0);
@@ -73,6 +72,7 @@ export function createSceneGeometry(scene:Scene,owner:ResourceOwner,project:Blue
         label.mesh.scale.setScalar(labelWorldWidth/label.baseWidth);
       }
     },
-    diagnostics(){return{lineSegmentsVisible:visibleSegments,lineSegmentsTotal:totalSegments,wallHeight:walls[0]?.mesh.visible?walls[0].mesh.scale.y:0};},
+    diagnostics(){return{lineSegmentsVisible:visibleSegments,lineSegmentsTotal:totalSegments,wallHeight:wallMesh.visible?wallMesh.scale.y:0};},
   };
 }
+

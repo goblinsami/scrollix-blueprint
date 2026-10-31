@@ -39,16 +39,21 @@ export function buildFloorPlan(width:number,depth:number):FloorPlan {
     const a=i*Math.PI/64,b=(i+1)*Math.PI/64;
     line(door,[hinge[0]+Math.cos(a)*gap,hinge[1]-Math.sin(a)*gap],[hinge[0]+Math.cos(b)*gap,hinge[1]-Math.sin(b)*gap]);
   }
-  const x=width/2,z=depth/2,margin=Math.max(.7,Math.min(width,depth)*.12),tick=margin*.16;
-  const dz=z+margin,dx=-x-margin;
-  line(annotations,[-x,z+margin*.25],[-x,dz+tick*2]);line(annotations,[x,z+margin*.25],[x,dz+tick*2]);
-  line(annotations,[-x,dz],[x,dz]);
-  for(const px of[-x,x])line(annotations,[px-tick,dz+tick],[px+tick,dz-tick]);
-  line(annotations,[-x-margin*.25,-z],[dx-tick*2,-z]);line(annotations,[-x-margin*.25,z],[dx-tick*2,z]);
-  line(annotations,[dx,-z],[dx,z]);
-  for(const pz of[-z,z])line(annotations,[dx-tick,pz-tick],[dx+tick,pz+tick]);
+  const thickness=Math.max(.09,Math.min(width,depth)*.012);
+  const minX=Math.min(...wallAxes.flatMap(a=>[a.start[0],a.end[0]]))-thickness/2;
+  const maxX=Math.max(...wallAxes.flatMap(a=>[a.start[0],a.end[0]]))+thickness/2;
+  const minZ=Math.min(...wallAxes.flatMap(a=>[a.start[1],a.end[1]]))-thickness/2;
+  const maxZ=Math.max(...wallAxes.flatMap(a=>[a.start[1],a.end[1]]))+thickness/2;
+  const x=maxX,z=maxZ,margin=Math.max(.7,Math.min(width,depth)*.12),tick=margin*.16;
+  const dz=z+margin,dx=minX-margin;
+  line(annotations,[minX,z+margin*.25],[minX,dz+tick*2]);line(annotations,[x,z+margin*.25],[x,dz+tick*2]);
+  line(annotations,[minX,dz],[x,dz]);
+  for(const px of[minX,x])line(annotations,[px-tick,dz+tick],[px+tick,dz-tick]);
+  line(annotations,[minX-margin*.25,minZ],[dx-tick*2,minZ]);line(annotations,[minX-margin*.25,z],[dx-tick*2,z]);
+  line(annotations,[dx,minZ],[dx,z]);
+  for(const pz of[minZ,maxZ])line(annotations,[dx-tick,pz-tick],[dx+tick,pz+tick]);
   return{wallAxes,structural:wallAxes.map(({start,end})=>({start,end})),door,annotations,
-    labels:[{text:width.toFixed(2)+' m',position:[0,dz+margin*.5]},{text:depth.toFixed(2)+' m',position:[dx-margin*.45,0]}],
+    labels:[{text:(maxX-minX).toFixed(2)+' m',position:[0,dz+margin*.5]},{text:(maxZ-minZ).toFixed(2)+' m',position:[dx-margin*.45,0]}],
     bounds:{width:width+margin*4.8,depth:depth+margin*4.8}};
 }
 /** Equal-distance subdivisions avoid whole long walls popping into view. */

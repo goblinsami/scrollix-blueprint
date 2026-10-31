@@ -7,8 +7,8 @@ a { color: inherit; }
 button, select, input[type="range"] { cursor: pointer; }
 :focus-visible { outline: 2px solid #bd5a32; outline-offset: 4px; }
 [hidden] { display: none !important; }
-.journey { height: calc(100svh + 2400px); }
-.studio-shell { --paper: #f4f1e8; --ink: #292c25; --muted: #72756a; --line: #d6d5c9; --panel: #eeece2; --accent: #ad5939; position: sticky; top: 0; height: 100svh; min-height: 480px; padding: 0 40px; color: var(--ink); background: var(--paper); display: flex; flex-direction: column; overflow: hidden; }
+.journey { height: calc(100svh + max(2400px, 400svh)); }
+.studio-shell { --paper: #f4f1e8; --ink: #292c25; --muted: #72756a; --line: #d6d5c9; --panel: #eeece2; --accent: #ad5939; position: sticky; top: 0; height: 100svh; min-height: 0; padding: 0 40px; color: var(--ink); background: var(--paper); display: flex; flex-direction: column; overflow: hidden; }
 .studio-shell[data-preset="inverted-blueprint"] { --paper: #122739; --ink: #e8eee9; --muted: #a2b4bf; --line: #39505e; --panel: #183044; --accent: #d2b187; }
 .studio-shell[data-preset="material-study"] { --paper: #e9e3d6; --ink: #423a31; --muted: #7b705f; --line: #c9bdab; --panel: #e0d7c8; --accent: #9b5435; }
 .masthead { height: 76px; flex: 0 0 76px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); gap: 20px; }
@@ -98,3 +98,5 @@ h1 > span { color: var(--accent); }
 }
 @media (max-width: 350px) { h1 { font-size: 27px; } .phase-navigation button { padding: 8px 5px; font-size: 9px; } .control-desk { gap: 12px 8px; } .coordinate-label { font-size: 7px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; } }
+
+@media (max-height: 520px) { .masthead { flex-basis: 40px; height: 40px; } .project-heading { padding: 10px 0; } .project-heading h1 { font-size: 26px; } .eyebrow { margin-bottom: 5px; } .control-desk { padding: 9px 12px; } .progress-control p { display: none; } .studio-footer { flex-basis: 24px; } }

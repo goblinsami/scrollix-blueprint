@@ -26,7 +26,9 @@ export function createBlueprintScene({container,project,signal}:SceneFactoryOpti
     const fill=new DirectionalLight('#dce9f0',.65);fill.position.set(-10,8,-4);scene.add(fill);
     const geometry=createSceneGeometry(scene,owner,project,palette,container.ownerDocument);
     const apply=()=>{
-      motion=sampleSceneMotion(progress,project,width<700?'mobile':'desktop',width/height);
+      const reduced=project.accessibility.reducedMotion==='always'||container.ownerDocument.defaultView?.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      geometry.setDraw(reduced?1:sampleTimeline(progress,project.timeline).draw);
+      motion=sampleSceneMotion(reduced?1:progress,project,width<700?'mobile':'desktop',width/height);
       camera.aspect=width/height;camera.position.set(...motion.position);camera.up.set(...motion.up);camera.lookAt(...motion.lookAt);camera.updateProjectionMatrix();
       geometry.applyMotion(motion,camera,height);
     };

@@ -48,12 +48,13 @@ test('Spatial Draw → Extrude → Reveal reconstructs earlier camera and walls'
 
 test('native wheel reaches and reverses all phases and Reveal resizes without losing geometry', async ({ page }) => {
   await ready(page);
-  await view(page).hover(); await page.mouse.wheel(0, 1000);
+  const distance=await number(page,'scroll-distance');
+  await view(page).hover(); await page.mouse.wheel(0, distance*.42);
   await expect(view(page)).toHaveAttribute('data-phase', 'extrude');
   await expect.poll(() => number(page, 'wall-height')).toBeGreaterThan(0);
-  await page.mouse.wheel(0, 900); await expect(view(page)).toHaveAttribute('data-phase', 'reveal');
+  await page.mouse.wheel(0, distance*.38); await expect(view(page)).toHaveAttribute('data-phase', 'reveal');
   await expect.poll(() => number(page, 'wall-height')).toBeCloseTo(3, 3);
-  await page.mouse.wheel(0, -1200); await expect(view(page)).toHaveAttribute('data-phase', 'draw');
+  await page.mouse.wheel(0, -distance*.50); await expect(view(page)).toHaveAttribute('data-phase', 'draw');
   await expect.poll(() => number(page, 'wall-height')).toBe(0);
   await button(page, 'Reveal');
   const size = page.viewportSize()!, beforeResize = await number(page, 'render-count');

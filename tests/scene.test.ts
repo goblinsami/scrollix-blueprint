@@ -21,7 +21,7 @@ describe('architectural plan', () => {
   });
   it('has exactly two dimension labels with correct values outside the structural perimeter', () => {
     const plan = buildFloorPlan(12, 18);
-    expect(plan.labels.map(label => label.text)).toEqual(['12.00 m', '18.00 m']);
+    expect(plan.labels.map(label => label.text)).toEqual(['11.90 m', '17.42 m']);
     expect(plan.labels[0]!.position[1]).toBeGreaterThan(9); expect(plan.labels[1]!.position[0]).toBeLessThan(-6);
     expect(plan.annotations.length).toBeGreaterThanOrEqual(6);
     for (const segment of [...plan.structural, ...plan.door, ...plan.annotations]) {
@@ -31,7 +31,7 @@ describe('architectural plan', () => {
   });
   it('builds parametric dimensions rather than fixed geometry', () => {
     const plan = buildFloorPlan(20, 7);
-    expect(plan.labels.map(label => label.text)).toEqual(['20.00 m', '7.00 m']);
+    expect(plan.labels.map(label => label.text)).toEqual(['19.69 m', '6.81 m']);
     expect(plan.bounds.width).toBeGreaterThan(20); expect(plan.bounds.depth).toBeGreaterThan(7);
     expect(Math.max(...plan.structural.flatMap(segment => [segment.start[0], segment.end[0]]))).toBe(10);
   });
